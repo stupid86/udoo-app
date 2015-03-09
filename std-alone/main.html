@@ -1,0 +1,1269 @@
+<!DOCTYPE html> 
+<html lang="en">
+	<head>
+		 
+		<!--  
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		-->
+		<title>Color Sorter</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="../../public/stylesheets/style.css" />
+		<link rel="stylesheet" href="../../public/jquery-ui-1.11.0.custom/jquery-ui.css">
+		<script src="../../public/jquery-ui-1.11.0.custom/external/jquery/jquery.js"></script>
+		<script src="../../public/jquery-ui-1.11.0.custom/jquery-ui.js"></script>
+		<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+		<script src="../public/javascripts/main.js"></script>
+		 		 
+	</head>
+	<body id="html_body">
+		
+		<input id="getfocus" />	
+		<img id="user" src="../public/images/user.png">
+		<form>
+			<fieldset class="user_info">
+				<legend> USER NAME </legend>
+				<input READONLY id="username" maxlength="20" value="comas" />
+			</fieldset>
+		</form>
+				
+		<div id="clean_err_dlg" title="CLEANING..">
+			
+			<div class="clean_err_div">
+				<p><img id="highlight_img" src="../public/images/highlight.png">Cleaning..</p>
+			</div>
+			
+		</div>
+		
+		<div id="air_err_dlg" title="AIR ERROR">
+			
+			<div class="air_err_div">
+				<p><img id="err_img" src="../public/images/error.png">The air is low.</p>
+			</div>
+			
+		</div>
+		
+		<div id="chute_err_dlg" title="CHUTE ERROR">
+			<div class="chute_err_div">
+				<p id="chute_err"><img id="err_img" src="../public/images/error.png">Chute x</p>
+			</div>
+		</div>
+		
+		<!-- user name dialog init -->
+		<div id="user_dlg">
+			<input id="user_name_input" maxlength="20" value="" />
+			</br>
+			</br>
+			<input type="button" class="user_bts" id="user_rename" value="Rename">
+			<input type="button" class="user_bts" id="user_cancel" value="Cancel">
+		</div>
+		
+		<div id="system_dlg" title="SYSTEM OFF">
+			<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><b>Are you sure you want to shutdown your computer now?</b></p>
+		</div>
+		
+		<div id="mode_init_dlg" title="MODE INIT">
+			<div class="mode_text_div">
+				<p class="mode_init_text" id="mode_init_clean_on">Cleaning On</p>
+				<p class="mode_init_text" id="mode_init_clean_off">Cleaning Off</p>
+			</div>
+		</div>
+		
+		<div id="shutdown_dlg" title="Shutdown...">
+			<div class="shutdown" id="check-shutdown" style="width:300px;">
+				<input type="checkbox" id="shutdown-0" value=0 name="checkbox"><label for="shutdown-0">Feed OFF</label></br></br>
+				<input type="checkbox" id="shutdown-1" value=0 name="checkbox"><label for="shutdown-1">Eject OFF</label></br></br>
+				<input type="checkbox" id="shutdown-2" value=0 name="checkbox"><label for="shutdown-2">Clean ON</label></br></br>	
+				<input type="checkbox" id="shutdown-3" value=0 name="checkbox"><label for="shutdown-3">Clean OFF</label>	
+			</div>
+		</div>
+		
+		<div id="progress_dlg" title="Init Program">
+			<div id="progressbar">
+				<div class="progress-label">Loading...</div>
+			</div>
+		</div>
+		
+		<!-- Top menu -->
+		
+		<div class="top_menu">	
+			<!-- Account menu start -->
+			<div id="account_list_top">
+				<ul id="account_list_top_menu">
+					<li>
+						
+						<span  id="account_menu_title">Operator</span>
+						
+						<ul>
+							<li class="account_list_sub" id="admin" selected value=1>ADMIN</li>
+							<li class="account_list_sub" id="engineer" value=2>Engineer</li>
+							<li class="account_list_sub" id="operator" value=0>Operator</li>
+						</ul>
+					</li>
+					
+				</ul>
+			</div>	
+			<!-- Account menu end -->
+			
+			<!-- Mode List menu start -->
+			<div id="mode_list_top">
+				<ul id="mode_list_top_menu">
+					<li>
+						<span  id="mode_menu_title">MODE</span>
+						<ul>
+							<li class="mode_list_sub" id="mode_1" value=0>Mode 1</li>
+							<li class="mode_list_sub" id="mode_2" value=1>Mode 2</li>
+							<li class="mode_list_sub" id="mode_3" value=2>Mode 3</li>
+							<li class="mode_list_sub" id="mode_4" value=3>Mode 4</li>
+							<li class="mode_list_sub" id="mode_5" value=4>Mode 5</li>
+							<li class="mode_list_sub" id="mode_6" value=5>Mode 6</li>
+							<li class="mode_list_sub" id="mode_7" value=6>Mode 7</li>
+							<li class="mode_list_sub" id="mode_8" value=7>Mode 8</li>
+						</ul>
+					</li>
+					
+				</ul>
+			</div>	
+			<!-- Mode List menu end -->
+			<input id="date" READONLY />
+			
+			<div id="date_config"  title="Date and Time Config">
+				
+				<table id="date_table_1" style="width:100%">
+				  <tr id="title_1">
+					<th>Year</th>
+					<th>Month</th>
+					<th>Day</th>
+				  </tr>
+				  <tr>
+					<td>
+						</br>
+						<div class="year_div">
+							<img class="date_bt" id="year_d" src="../public/images/down_button.png" />
+							<input	class="date_val" id="year_val" name="year_val" value=0000 maxlength="4" />
+							<img class="date_bt" id="year_u" src="../public/images/up_button.png" />
+						</div>
+					</td>
+					<td>
+						</br>
+						<div class="month_div">
+							<img class="date_bt" id="month_d" src="../public/images/down_button.png" />
+							<input class="date_val" id="month_val" name="month_val" value=00 maxlength="2" />
+							<img class="date_bt" id="month_u" src="../public/images/up_button.png" />
+						</div>
+					</td>
+					<td>
+						</br>
+						<div class="day_div">
+							<img class="date_bt" id="day_d" src="../public/images/down_button.png" />
+							<input class="date_val" id="day_val" name="day_val" value=00 maxlength="2" "javascript:blur();" />
+							<img class="date_bt" id="day_u" src="../public/images/up_button.png" />
+						</div>
+					</td>
+				  </tr>
+				</table>
+				<table id="date_table_2" style="width:100%">		
+				  <tr id="title_2">
+					<th>Hour</th>
+					<th>Min</th>
+					<th>Second</th>
+				  </tr>
+				  <tr>
+					<td>
+						</br>
+						<div class="hour_div">
+							<img class="date_bt" id="hour_d" src="../public/images/down_button.png" />
+							<input class="date_val" id="hour_val" name="hour_val" value=00 maxlength="2" />
+							<img class="date_bt" id="hour_u" src="../public/images/up_button.png" />
+						</div>
+				    </td>
+					<td>
+						</br>
+						<div class="min_div">
+							<img class="date_bt" id="min_d" src="../public/images/down_button.png" />
+							<input class="date_val" id="min_val" name="min_val" value=00 maxlength="2" />
+							<img class="date_bt" id="min_u" src="../public/images/up_button.png" />
+						</div>
+				    </td>
+					<td>
+						</br>
+						<div class="sec_div">
+							<img class="date_bt" id="sec_d" src="../public/images/down_button.png" />
+							<input class="date_val" id="sec_val" name="min_val" value=00 maxlength="2" />
+							<img class="date_bt" id="sec_u" src="../public/images/up_button.png" />
+						</div>
+				    </td>
+				  </tr>
+					<tr>
+						<td> 
+						
+						</td>
+						<td> 
+							<button class="dt_push_bts" id="dt_apply" value=0>Apply</button> 
+						</td>
+						<td> 
+							<button class="dt_push_bts" id="dt_cancel" value=0>Cancel</button> 
+						</td>
+						
+					</tr> 		
+				</table>
+				<!--
+				<table id="date_table_3" style="width:100%">
+
+					
+					
+				</table>
+				-->
+				</div>
+								
+			</div>
+		
+		
+		<div class="main_menu">
+			<div id="step_div">
+				<button class="step_btn" id="step-1st" value = "" > 1ST 
+					<img class="step-img" id="step-1st-img" src="../public/images/push.png" align="left">
+				</button>
+				<button class="step_btn" id="step-2nd" value = "" > 2ND 
+					<img class="step-img" id="step-2nd-img" src="../public/images/push.png" align="left">
+				</button>
+				<button class="step_btn" id="step-3rd" value = "" > 3RD 
+					<img class="step-img" id="step-3rd-img" src="../public/images/push.png" align="left">
+				</button>
+			</div>
+				
+			<!-- Feed Main -->
+			<div class="feed_main">
+				<input class="feed_main_text" id="feed_title" READONLY value="FEED">
+				<input	class="feed_main_text" READONLY type="text" id="Feed_val" value=30>
+				<input class="feed_main_text" id="feed_unit" READONLY value="%">
+			</div>		
+
+			<!-- rgb_head_title -->
+			<div class="rgb_head_title"> 
+				<input class="rgb_head_title_text" id="rgb-defect" READONLY value = "DEFECT" >
+				<input class="rgb_head_title_text" id="rgb-spot" READONLY value = "SPOT" >
+				<input class="rgb_head_title_text" id="rgb-color" READONLY value = "COLOR" >
+			</div>
+			
+			<!-- Defect Main -->
+			<div class="defect"> 
+				<input class="defect_main_text" READONLY id="defect_size" READONLY value = "SIZE" >
+				<input class="defect_vals" READONLY type="text" id="Defect_val" READONLY value=1 />
+				<input class="defect_vals" READONLY type="text" id="defect_pxl" READONLY value=1 />
+			</div>
+			
+			<div class="rgb_b"> 
+				<input id="rgb_text_b" READONLY value = "BLUE" >
+				
+				<input id="rgb_text_b_d" READONLY value="D">
+				<input class="RGB_val" READONLY type="text" id="B_D_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="B_D_C" value=100>
+			
+				<input id="rgb_text_b_l" READONLY value="L">	
+				<input class="RGB_val" READONLY type="text" id="B_L_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="B_L_C" value=100>
+			</div>
+			
+			<div class="rgb_g">
+				<input id="rgb_text_g" READONLY value="GREEN">
+				
+				<input id="rgb_text_g_d" READONLY value = "D"> 
+				<input class="RGB_val" READONLY type="text" id="G_D_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="G_D_C" value=100>
+				
+				<input id="rgb_text_g_l" READONLY value = "L">
+				<input class="RGB_val" READONLY type="text" id="G_L_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="G_L_C" value=100>
+			</div>
+			
+			<div class="rgb_r"> 
+				<input id="rgb_text_r" READONLY value="RED">
+				
+				<input id="rgb_text_r_d" READONLY value="D">
+				<input class="RGB_val" READONLY type="text" id="R_D_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="R_D_C" value=100>
+			
+				<input id="rgb_text_r_l" READONLY value="L">
+				<input class="RGB_val" READONLY type="text" id="R_L_S" value=100>
+				<input class="RGB_val" READONLY type="text" id="R_L_C" value=100>
+			</div> 
+		</div>	
+		
+		<div class="main_bts">	
+			<button class="main_bt" id="help" style="color:black;" value = "" > HELP </button>		
+			<button class="main_bt" id="eject" style="color:black;"  value = "">EJECT</button>		
+			<button class="main_bt" id="feed" style="color:black;"  value = "">FEED</button>		
+		</div>
+		<!-- Feed Dialog -->
+		<div class="Feed_Dlg" id="Feed_Dlg" title="">
+			<input READONLY  id="Feed_Dlg_Ack" onfocus="javascript:blur();">
+			<button id="Feed_Dlg_Adv"> ADV </button></br></br>
+			<div class="feed_arrow_bt_div">				
+				<img class="Arrow_bt" id="Feed_Dlg_Arrow_bt_left" src="../public/images/down_button.png">
+				<input	class="" id="Feed_Dlg_val" name="val" value=30>
+				<img class="Arrow_bt" id="Feed_Dlg_Arrow_bt_right" src="../public/images/up_button.png">
+				</br>
+			</div>
+			<div id="Feed_Dlg_slider"> </div>
+			</br>
+			<button class="confirm" id="Feed_Dlg_ok">     OK</button>
+			<button class="confirm" id="Feed_Dlg_cancel"> CANCEL</button>
+		</div>
+
+		<!-- Defect Dialog -->	
+		<div class="Defect_Dlg" id="Defect_Dlg" title="">
+			<input READONLY  id="Defect_Dlg_Ack" onfocus="javascript:blur();">
+			<button id="Defect_Dlg_Adv"> RESERVED </button></br></br>
+			<div class="defect_arrow_bt_div">				
+				<img class="Arrow_bt" id="Defect_Dlg_Arrow_bt_left" src="../public/images/down_button.png">
+				<input	class="" id="Defect_Dlg_val" name="val" value=1>
+				<img class="Arrow_bt" id="Defect_Dlg_Arrow_bt_right" src="../public/images/up_button.png">
+				</br>
+			</div>
+			<div id="Defect_Dlg_slider"> </div>
+			</br>
+			<button class="confirm" id="Defect_Dlg_ok">     OK</button>
+			<button class="confirm" id="Defect_Dlg_cancel"> CANCEL</button>		
+		</div>
+		
+		<!-- Defect Pxl Dialog -->	
+		<div class="Defect_Pxl_Dlg" id="Defect_Pxl_Dlg" title="">
+			<input READONLY  id="Defect_Pxl_Dlg_Ack" onfocus="javascript:blur();">
+			<button id="Defect_Pxl_Dlg_Adv"> RESERVED </button></br></br>
+			<div class="defect_pxl_arrow_bt_div">				
+				<img class="Arrow_bt" id="Defect_Pxl_Dlg_Arrow_bt_left" src="../public/images/down_button.png">
+				<input	class="" id="Defect_Pxl_Dlg_val" name="val" value=1>
+				<img class="Arrow_bt" id="Defect_Pxl_Dlg_Arrow_bt_right" src="../public/images/up_button.png">
+				</br>
+			</div>
+			<div id="Defect_Pxl_Dlg_slider"> </div>
+			</br>
+			<button class="confirm" id="Defect_Pxl_Dlg_ok">     OK</button>
+			<button class="confirm" id="Defect_Pxl_Dlg_cancel"> CANCEL</button>		
+		</div>
+		
+		<!-- RGB sensitivity -->
+		<div class="RGB_Dlg" id="RGB_Dlg" title="">
+			<button id="RGB_ONOFF" onfocus="javascript:blur();">ON</button>
+			<button id="RGB_Dlg_Adv"> ADV </button></br></br>
+			<div class="RGB_Arrow_bt_div">				
+				<img class="Arrow_bt" id="RGB_Dlg_Arrow_bt_left" src="../public/images/down_button.png">
+				<input	class="" id="RGB_Dlg_val" name="val" value=30>
+				<img class="Arrow_bt" id="RGB_Dlg_Arrow_bt_right" src="../public/images/up_button.png">
+				</br>
+			</div>
+			<div id="RGB_Dlg_slider"> </div>
+			</br>
+			<div class="rgb_confirm">
+				<button class="confirm" id="RGB_Dlg_ok">     OK</button>
+				<button class="confirm" id="RGB_Dlg_cancel"> CANCEL</button>
+			</div>
+		</div>
+		
+		<!--Feed Adv dialog  -->
+		<div class="Feed_Adv_Dlg" id="Feed_Adv_Dlg" title="Feed All Information">
+			
+			<div class="adv_feed_1_4">
+				<div class="adv_feed_div" id="Adv_feed_1" >
+					<p class="feed_titles_1">FEED 1</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_1" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_1" src="../public/images/down_button.png" style="">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_1" value=8/>
+						<img class="feed_value_up" id="feed_value_up_1" src="../public/images/up_button.png" style="">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_1" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_1" value="OK">
+				</div>
+				
+				<div class="adv_feed_div" id="Adv_feed_2" >
+					<p class="feed_titles_1">FEED 2</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_2" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_2" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_2" value=8>
+						<img class="feed_value_up" id="feed_value_up_2" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_2" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_2" value="OK">
+				</div>
+				
+				<div class="adv_feed_div"  id="Adv_feed_3" >
+					<p class="feed_titles_1">FEED 3</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_3" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_3" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_3" value=8>
+						<img class="feed_value_up" id="feed_value_up_3" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_3" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_3" value="OK">
+				</div>
+				
+				<div class="adv_feed_div"  id="Adv_feed_4" >
+					<p class="feed_titles_1">FEED 4</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_4" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_4" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_4" value=8>
+						<img class="feed_value_up" id="feed_value_up_4" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_4" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_4" value="OK">
+				</div>
+			</div>
+			<div class="adv_feed_5_8">
+				
+				<div class="adv_feed_div" id="Adv_feed_5" >
+					<p class="feed_titles_2">FEED 5</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_5" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_5" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_5" value=8>
+						<img class="feed_value_up" id="feed_value_up_5" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_5" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_5" value="OK">
+				</div>
+				
+				<div class="adv_feed_div" id="Adv_feed_6" >
+					<p class="feed_titles_2">FEED 6</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_6" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_6" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_6" value=8>
+						<img class="feed_value_up" id="feed_value_up_6" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_6" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_6" value="OK">
+				</div>
+				
+				<div class="adv_feed_div" id="Adv_feed_7" >
+					<p class="feed_titles_2">FEED 7</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_7" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_7" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_7" value=8>
+						<img class="feed_value_up" id="feed_value_up_7" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_7" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_7" value="OK">
+				</div>
+				
+				<div class="adv_feed_div" id="Adv_feed_8" >
+					<p class="feed_titles_2">FEED 8</p>
+					<input 	type="button" 	class="enable_disable" id="Feed_enable_8" value="Disable"></br>
+					<div style="text-align:center">
+						<img class="feed_value_down" id="feed_value_down_8" src="../public/images/down_button.png">
+						<input class="Adv_Feed_individual_value" id="Feed_individual_8" value=8>
+						<img class="feed_value_up" id="feed_value_up_8" src="../public/images/up_button.png">
+					</div>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_vibrate_8" value="00"></br>
+					<input	type="text" 	READONLY class="Adv_Dlg_text"	id="Adv_feed_state_8" value="OK">
+					
+				</div>
+				
+			</div>
+			
+			<button class="feed_manual" id="Adv_feed_manual_auto"> <label for="Adv_feed_manual_auto">MANUAL</label> </button>
+		</div>
+			
+		<!-- Camera_Adv_Dlg start-->
+		<div id="Camera_Adv_Dlg" >
+			<div class="camera_a1_a4">
+				<div class="Camera_adv_div" id="Camera_adv_a1">
+					<p class="camera_titles"> A1 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a1" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a1" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a1" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a2">
+					<p class="camera_titles"> A2 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a2" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a2" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a2" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a3">
+					<p class="camera_titles"> A3 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a3" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a3" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a3" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a4">
+					<p class="camera_titles"> A4 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a4" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a4" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a4" src="../public/images/up_button.png">
+				</div>
+			</div>	
+			<div class="camera_a5_a8">	
+				<div class="Camera_adv_div" id="Camera_adv_a5">
+					<p class="camera_titles"> A5 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a5" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a5" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a5" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a6">
+					<p class="camera_titles"> A6 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a6" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a6" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a6" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a7">
+					<p class="camera_titles"> A7 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a7" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a7" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a7" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_a8">
+					<p class="camera_titles"> A8 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_a8" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="a8" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_a8" src="../public/images/up_button.png">
+				</div>
+			</div>
+			<div class="camera_b1_b4">
+				<div class="Camera_adv_div" id="Camera_adv_b1">
+					<p class="camera_titles"> B1 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b1" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b1" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b1" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_b2">
+					<p class="camera_titles"> B2 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b2" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b2" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b2" src="../public/images/up_button.png">
+				</div>
+			
+				<div class="Camera_adv_div" id="Camera_adv_b3">
+					<p class="camera_titles"> B3 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b3" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b3" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b3" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_b4">
+					<p class="camera_titles"> B4 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b4" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b4" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b4" src="../public/images/up_button.png">
+				</div>
+			</div>
+			<div class="camera_b5_b8">
+				<div class="Camera_adv_div" id="Camera_adv_b5">
+					<p class="camera_titles"> B5 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b5" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b5" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b5" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_b6">
+					<p class="camera_titles"> B6 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b6" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b6" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b6" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_b7">
+					<p class="camera_titles"> B7 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b7" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b7" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b7" src="../public/images/up_button.png">
+				</div>
+				<div class="Camera_adv_div" id="Camera_adv_b8">
+					<p class="camera_titles"> B8 </p>
+					<img class="adv_cam_value_down" id="adv_cam_value_down_b8" src="../public/images/down_button.png">
+					<input READONLY class="Adv_camera_value" id="b8" value=0.0/>
+					<img class="adv_cam_value_up" id="adv_cam_value_up_b8" src="../public/images/up_button.png">
+				</div>
+			</div>	
+		</div>
+		<!-- Camera_Adv_Dlg END-->
+		
+		<!-- ejecting control open -->
+		<div id="Ejecting_Control_Dlg">
+			<div class="delay_div">
+				<div class="delay_1">
+					<p id="delay_titles"> DELAY 1</p>
+					<img class="ejecting_control_btn_d" id="delay_val_1_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="delay_val_1" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="delay_val_1_u" src="../public/images/up_button.png">
+				</div>			
+				<div  class="delay_2">
+					<p id="delay_title_2"> DELAY 2</p>
+					<img class="ejecting_control_btn_d" id="delay_val_2_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="delay_val_2" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="delay_val_2_u" src="../public/images/up_button.png">
+				</div>
+				<div  class="delay_3">
+					<p id="delay_title_3"> DELAY 3</p>
+					<img class="ejecting_control_btn_d" id="delay_val_3_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="delay_val_3" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="delay_val_3_u" src="../public/images/up_button.png">
+				</div>
+			</div>
+			
+			<div class="head_div">
+				<div class="head_1">
+					<p> HEAD 1</p>
+					<img class="ejecting_control_btn_d" id="head_val_1_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="head_val_1" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="head_val_1_u" src="../public/images/up_button.png">
+				</div>
+				<div class="head_2">
+					<p> HEAD 2</p>
+					<img class="ejecting_control_btn_d" id="head_val_2_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="head_val_2" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="head_val_2_u" src="../public/images/up_button.png">
+				</div>
+				<div class="head_3">
+					<p> HEAD 3</p>
+					<img class="ejecting_control_btn_d" id="head_val_3_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="head_val_3" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="head_val_3_u" src="../public/images/up_button.png">
+				</div>	
+			</div>
+			
+			<div class="hold_div">
+				<div class="hold_1">
+					<p> HOLD 1</p>
+					<img class="ejecting_control_btn_d" id="hold_val_1_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="hold_val_1" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="hold_val_1_u" src="../public/images/up_button.png">
+				</div>
+				<div class="hold_2">
+					<p> HOLD 2</p>
+					<img class="ejecting_control_btn_d" id="hold_val_2_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="hold_val_2" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="hold_val_2_u" src="../public/images/up_button.png">
+				</div>
+				<div class="hold_3">
+					<p> HOLD 3</p>
+					<img class="ejecting_control_btn_d" id="hold_val_3_d" src="../public/images/down_button.png">
+					<input READONLY class="Ejecting_val" id="hold_val_3" onfocus="javascript:blur();" value=54>
+					<img class="ejecting_control_btn_u" id="hold_val_3_u" src="../public/images/up_button.png">
+				</div>	
+			</div>
+			
+		</div>
+		
+		<!-- Cleaning Dialog start -->	
+		<div id="Cleaning_Dlg">
+			<div class="clean_titles" >
+				<p id="clean-auto-title">AUTO</p>
+				<p id="clean-cycle-title">CYCLE(MIN)</p>
+				<p id="clean-manual-title">MANUAL</p>
+			</div>
+			<div class="auto">
+				 <button class="Cleaning" id="clean-auto-btn" onfocus="javascript:blur();">ENABLE</button>
+			</div>
+			<div class="Cycle">
+				 <img class="Cleaning_cycle_bt" id="Cleaning_cycle_value_down" src="../public/images/down_button.png">
+				<input READONLY class="" id="Cycle" value=60>
+				<img class="Cleaning_cycle_bt" id="Cleaning_cycle_value_up" src="../public/images/up_button.png" style="">
+			</div>
+			<div class="Manual">
+				<button class="Cleaning" id="clean-title-manual">OFF</button>
+			</div>
+		</div>
+		<!-- Cleaning Dialog end -->
+		
+		<div id="Lighting_Dlg">
+			
+			<div class="A1">
+				<p class="light_title">A1</p>
+				<button class="light_on_bt" id="light_on_a1">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_a1" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_a1" onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_a1" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_a1" onfocus="javascript:blur();" value="OK">
+			</div>
+			<div class="A2">
+				<p class="light_title">A2</p>
+				<button class="light_on_bt" id="light_on_a2">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_a2" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_a2"  onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_a2" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_a2" onfocus="javascript:blur();" value="OK">
+					
+			</div>
+			<div class="A3">
+				<p class="light_title">A3</p>
+				<button class="light_on_bt" id="light_on_a3">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_a3" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_a3" onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_a3" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_a3" onfocus="javascript:blur();" value="OK">
+			</div>
+			
+			<div class="B1">
+				<p class="light_title">B1</p>
+				<button class="light_on_bt" id="light_on_b1">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_b1" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_b1" onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_b1" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_b1" onfocus="javascript:blur();" value="OK">
+			</div>
+			<div class="B2">
+				<p class="light_title">B2</p>
+				<button class="light_on_bt" id="light_on_b2">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_b2" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_b2" onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_b2" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_b2" onfocus="javascript:blur();" value="OK">
+					
+			</div>
+			<div class="B3">
+				<p class="light_title">B3</p>
+				<button class="light_on_bt" id="light_on_b3">ON</button></br>
+				<div class="light_bt">
+					<img class="light_val_bt" id="light_value_d_b3" src="../public/images/down_button.png" style="">
+					<input READONLY class="light_val" id="light_val_b3" onfocus="javascript:blur();" value=100>
+					<img class="light_val_bt" id="light_value_u_b3" src="../public/images/up_button.png" style="">
+				</div>
+				<input READONLY class="light_state" id="light_state_b3" onfocus="javascript:blur();" value="OK">
+					
+			</div>
+		</div>
+		
+		<div id="mode_copy_dlg">
+			<div id="src_tg_div">
+				<p>
+					Source
+					<select name="mode_list" id="mode_list">
+						
+					</select>
+				</p>
+				<div class="target_div">
+				<p>
+					Target
+					<input id="target_mode" value="Mode 1" />
+				</p>
+				</div>
+			</div>
+			<div class="mode_bts_div">
+				<button class="mode_bts" id="backup">BackUp</button>
+				<button class="mode_bts" id="recovery">Recovery</button>
+				<button class="mode_bts" id="load">Load</button>
+				<button class="mode_bts" id="rename">Rename</button>
+			</div>
+			
+			<div class="valid_check_btn_div">
+				<button id="valid_check_btn_1" value=0 > </button>
+				<button id="valid_check_btn_2" value=0 > </button>
+			</div>	
+		</div>
+		
+		<div class="Camera_Onoff_Dlg" id="Camera_Onoff_Dlg" title="Camera">
+			<div class="md-rgb-a">
+				<p id="md-cam-title-a">Cam RGB A</p>	
+				<button class="check-rgb-a" id="rgb-a-5" value=1>BD</button>
+				<button class="check-rgb-a" id="rgb-a-4" value=1>BL</button>
+				<button class="check-rgb-a" id="rgb-a-3" value=1>GD</button>
+				<button class="check-rgb-a" id="rgb-a-2" value=1>GL</button>
+				<button class="check-rgb-a" id="rgb-a-1" value=1>RD</button>
+				<button class="check-rgb-a" id="rgb-a-0" value=1>RL</button>				
+			</div>
+			<div class="md-rgb-b">
+				<p id="md-cam-title-b">Cam RGB B</p>
+				
+				<button class="check-rgb-b" id="rgb-b-5" value=1>BD</button>
+				<button class="check-rgb-b" id="rgb-b-4" value=1>BL</button>
+				<button class="check-rgb-b" id="rgb-b-3" value=1>GD</button>
+				<button class="check-rgb-b" id="rgb-b-2" value=1>GL</button>
+				<button class="check-rgb-b" id="rgb-b-1" value=1>RD</button>
+				<button class="check-rgb-b" id="rgb-b-0" value=1>RL</button>
+			</div>
+			
+			<div class="cam_a1_a8">
+				<div id="camera_div_a1" style="float:left">
+					<p class="camera_onoff_titles">A1</p>
+					<button class="camera_onoff" id="camera_a1" value=1>ON</button>
+				</div>
+				<div id="camera_div_a2" style="float:left">
+					<p class="camera_onoff_titles">A2</p>
+					<button class="camera_onoff" id="camera_a2" value=1>ON</button>
+				</div>
+				<div id="camera_div_a3" style="float:left">
+					<p class="camera_onoff_titles">A3</p>
+					<button class="camera_onoff" id="camera_a3" value=1>ON</button>
+				</div>
+				<div id="camera_div_a4" style="float:left">
+					<p class="camera_onoff_titles">A4</p>
+					<button class="camera_onoff" id="camera_a4" value=1>ON</button>
+				</div>
+				<div id="camera_div_a5" style="float:left">
+					<p class="camera_onoff_titles">A5</p>
+					<button class="camera_onoff" id="camera_a5" value=1>ON</button>
+				</div>
+				<div id="camera_div_a6" style="float:left">
+					<p class="camera_onoff_titles">A6</p>
+					<button class="camera_onoff" id="camera_a6" value=1>ON</button>
+				</div>
+				<div id="camera_div_a7" style="float:left">
+					<p class="camera_onoff_titles">A7</p>
+					<button class="camera_onoff" id="camera_a7" value=1>ON</button>
+				</div>
+				<div id="camera_div_a8" style="float:left">
+					<p class="camera_onoff_titles">A8</p>
+					<button class="camera_onoff" id="camera_a8" value=1>ON</button>
+				</div>
+			</div>
+			
+			<div class="cam_b1_b8">	
+				<div id="camera_div_b1" style="float:left">
+					<p class="camera_onoff_titles">B1</p>
+					<button class="camera_onoff" id="camera_b1" value=1>ON</button>
+				</div>
+				<div id="camera_div_b2" style="float:left">
+					<p class="camera_onoff_titles">B2</p>
+					<button class="camera_onoff" id="camera_b2" value=1>ON</button>
+				</div>
+				<div id="camera_div_b3" style="float:left">
+					<p class="camera_onoff_titles">B3</p>
+					<button class="camera_onoff" id="camera_b3" value=1>ON</button>
+				</div>
+				<div id="camera_div_b4" style="float:left">
+					<p class="camera_onoff_titles">B4</p>
+					<button class="camera_onoff" id="camera_b4" value=1>ON</button>
+				</div>
+				<div id="camera_div_b5" style="float:left">
+					<p class="camera_onoff_titles">B5</p>
+					<button class="camera_onoff" id="camera_b5" value=1>ON</button>
+				</div>
+				<div id="camera_div_b6" style="float:left">
+					<p class="camera_onoff_titles">B6</p>
+					<button class="camera_onoff" id="camera_b6" value=1>ON</button>
+				</div>
+				<div id="camera_div_b7" style="float:left">
+					<p class="camera_onoff_titles">B7</p>
+					<button class="camera_onoff" id="camera_b7" value=1>ON</button>
+				</div>
+				<div id="camera_div_b8" style="float:left">
+					<p class="camera_onoff_titles">B8</p>
+					<button class="camera_onoff" id="camera_b8" value=1>ON</button>
+				</div>
+			</div>
+		</div>
+		  
+		<!-- Model Dialog Start-->
+		<div class="Model_Dlg" id="Model_Dlg">
+			<div class="model_div">
+			
+				<div class="md-color">
+					<p id="md-color-title" >Color</p> <button class="model-btn" id="md-color" onfocus="javascript:blur();" value=0>FULL</button></br>
+				</div>
+				<div class="md-nir">
+					<p id="md-nir-title">Nir Func</p> <button class="model-btn" id="md-nir" value=0>NONE</button></br>
+				</div>
+				<div class="md-stage">
+					<p id="md-stage-title">Stage</p> <button class="model-btn" id="md-stage" value=0>DOUBLE</button></br>
+				</div>
+						
+				<div class="md-channel" id="check-channel">
+					
+					<p id="md-channel-title">Channel</p>
+					<button class="channel_btn" id="channel-0" value=0>64</button>
+					<button class="channel_btn" id="channel-1" value=1>128</button>
+					<button class="channel_btn" id="channel-2" value=2>192</button>
+					<button class="channel_btn" id="channel-3" value=3>256</button>
+					<button class="channel_btn" id="channel-4" value=4>320</button>
+					<button class="channel_btn" id="channel-5" value=5>384</button>
+				</div>	
+				<div class="md-step">
+					<p id="md-step-title">Order</p>
+					<input	READONLY class="Adv_Feed_info_1" id="feed_toggle_1" onfocus="javascript:blur();" value="1st">
+					<input	READONLY class="Adv_Feed_info_1" id="feed_toggle_2" value="1st">
+					<input	READONLY class="Adv_Feed_info_1" id="feed_toggle_3" value="1st">
+					<input	READONLY class="Adv_Feed_info_1" id="feed_toggle_4" value="2nd">
+
+					<input	READONLY class="Adv_Feed_info_2" id="feed_toggle_5" value="2nd">
+					<input	READONLY class="Adv_Feed_info_2" id="feed_toggle_6" value="3rd">
+					<input	READONLY class="Adv_Feed_info_2" id="feed_toggle_7" value="3rd">
+					<input	READONLY class="Adv_Feed_info_2" id="feed_toggle_8" value="3rd">
+				</div>
+			</div>		
+		</div>
+		<!-- Model Dialog end-->
+		
+		<!-- Airgun Dialog start -->
+		<div id="airgun_dlg">
+			
+			<img id="back" src="../public/images/back.png">
+			
+			<div class="airgun_check" id="check">
+				<input type="checkbox" id="checkbox1" name="checkbox"><label for="checkbox1">01</label>
+				<input type="checkbox" id="checkbox2" name="checkbox"><label for="checkbox2">02</label>
+				<input type="checkbox" id="checkbox3" name="checkbox"><label for="checkbox3">03</label>
+				<input type="checkbox" id="checkbox4" name="checkbox"><label for="checkbox4">04</label>
+				<input type="checkbox" id="checkbox5" name="checkbox"><label for="checkbox5">05</label>
+				<input type="checkbox" id="checkbox6" name="checkbox"><label for="checkbox6">06</label>
+				<input type="checkbox" id="checkbox7" name="checkbox"><label for="checkbox7">07</label>
+				<input type="checkbox" id="checkbox8" name="checkbox"><label for="checkbox8">08</label>
+				<input type="checkbox" id="checkbox9" name="checkbox"><label for="checkbox9">09</label>
+				<input type="checkbox" id="checkbox10" name="checkbox"><label for="checkbox10">10</label></br></br>
+				
+				<input type="checkbox" id="checkbox11" name="checkbox"><label for="checkbox11">11</label>
+				<input type="checkbox" id="checkbox12" name="checkbox"><label for="checkbox12">12</label>
+				<input type="checkbox" id="checkbox13" name="checkbox"><label for="checkbox13">13</label>
+				<input type="checkbox" id="checkbox14" name="checkbox"><label for="checkbox14">14</label>
+				<input type="checkbox" id="checkbox15" name="checkbox"><label for="checkbox15">15</label>
+				<input type="checkbox" id="checkbox16" name="checkbox"><label for="checkbox16">16</label>
+				<input type="checkbox" id="checkbox17" name="checkbox"><label for="checkbox17">17</label>
+				<input type="checkbox" id="checkbox18" name="checkbox"><label for="checkbox18">18</label>
+				<input type="checkbox" id="checkbox19" name="checkbox"><label for="checkbox19">19</label>
+				<input type="checkbox" id="checkbox20" name="checkbox"><label for="checkbox20">20</label></br></br>
+				
+				<input type="checkbox" id="checkbox21" name="checkbox"><label for="checkbox21">21</label>
+				<input type="checkbox" id="checkbox22" name="checkbox"><label for="checkbox22">22</label>
+				<input type="checkbox" id="checkbox23" name="checkbox"><label for="checkbox23">23</label>
+				<input type="checkbox" id="checkbox24" name="checkbox"><label for="checkbox24">24</label>
+				<input type="checkbox" id="checkbox25" name="checkbox"><label for="checkbox25">25</label>
+				<input type="checkbox" id="checkbox26" name="checkbox"><label for="checkbox26">26</label>
+				<input type="checkbox" id="checkbox27" name="checkbox"><label for="checkbox27">27</label>
+				<input type="checkbox" id="checkbox28" name="checkbox"><label for="checkbox28">28</label>
+				<input type="checkbox" id="checkbox29" name="checkbox"><label for="checkbox29">29</label>
+				<input type="checkbox" id="checkbox30" name="checkbox"><label for="checkbox30">30</label></br></br>
+				
+				<input type="checkbox" id="checkbox31" name="checkbox"><label for="checkbox31">31</label>
+				<input type="checkbox" id="checkbox32" name="checkbox"><label for="checkbox32">32</label>
+				<input type="checkbox" id="checkbox33" name="checkbox"><label for="checkbox33">33</label>
+				<input type="checkbox" id="checkbox34" name="checkbox"><label for="checkbox34">34</label>
+				<input type="checkbox" id="checkbox35" name="checkbox"><label for="checkbox35">35</label>
+				<input type="checkbox" id="checkbox36" name="checkbox"><label for="checkbox36">36</label>
+				<input type="checkbox" id="checkbox37" name="checkbox"><label for="checkbox37">37</label>
+				<input type="checkbox" id="checkbox38" name="checkbox"><label for="checkbox38">38</label>
+				<input type="checkbox" id="checkbox39" name="checkbox"><label for="checkbox39">39</label>
+				<input type="checkbox" id="checkbox40" name="checkbox"><label for="checkbox40">40</label></br></br>
+				
+				<input type="checkbox" id="checkbox41" name="checkbox"><label for="checkbox41">41</label>
+				<input type="checkbox" id="checkbox42" name="checkbox"><label for="checkbox42">42</label>
+				<input type="checkbox" id="checkbox43" name="checkbox"><label for="checkbox43">43</label>
+				<input type="checkbox" id="checkbox44" name="checkbox"><label for="checkbox44">44</label>
+				<input type="checkbox" id="checkbox45" name="checkbox"><label for="checkbox45">45</label>
+				<input type="checkbox" id="checkbox46" name="checkbox"><label for="checkbox46">46</label>
+				<input type="checkbox" id="checkbox47" name="checkbox"><label for="checkbox47">47</label>
+				<input type="checkbox" id="checkbox48" name="checkbox"><label for="checkbox48">48</label>
+				<input type="checkbox" id="checkbox49" name="checkbox"><label for="checkbox49">49</label>
+				<input type="checkbox" id="checkbox50" name="checkbox"><label for="checkbox50">50</label></br></br>
+				
+				<input type="checkbox" id="checkbox51" name="checkbox"><label for="checkbox51">51</label>
+				<input type="checkbox" id="checkbox52" name="checkbox"><label for="checkbox52">52</label>
+				<input type="checkbox" id="checkbox53" name="checkbox"><label for="checkbox53">53</label>
+				<input type="checkbox" id="checkbox54" name="checkbox"><label for="checkbox54">54</label>
+				<input type="checkbox" id="checkbox55" name="checkbox"><label for="checkbox55">55</label>
+				<input type="checkbox" id="checkbox56" name="checkbox"><label for="checkbox56">56</label>
+				<input type="checkbox" id="checkbox57" name="checkbox"><label for="checkbox57">57</label>
+				<input type="checkbox" id="checkbox58" name="checkbox"><label for="checkbox58">58</label>
+				<input type="checkbox" id="checkbox59" name="checkbox"><label for="checkbox59">59</label>
+				<input type="checkbox" id="checkbox60" name="checkbox"><label for="checkbox60">60</label></br></br>
+				 
+				<input type="checkbox" id="checkbox61" name="checkbox"><label for="checkbox61">61</label>
+				<input type="checkbox" id="checkbox62" name="checkbox"><label for="checkbox62">62</label>
+				<input type="checkbox" id="checkbox63" name="checkbox"><label for="checkbox63">63</label>
+				<input type="checkbox" id="checkbox64" name="checkbox"><label for="checkbox64">64</label>
+			</div>
+			
+			<div class ="rgb">
+				<div id="air-type">
+					<p class="title">TYPE</p>
+					<button class="airgun_btn" id="type">RGB</button>
+				</div></br>
+
+				<div id="air-part">
+					<p class="title">PART</p>
+					<button class="airgun_btn" id="part">A</button>
+				</div></br>
+				
+				<div class="chute">
+					<p class="title">CHUTE</p>
+					<select name="chute_list" id="chute_list">
+						<!--
+						<option value=1>1</option>
+						<option value=2>2</option>
+						<option value=3>3</option>
+						<option value=4>4</option>
+						<option value=5>5</option>
+						<option value=6>6</option>
+						-->
+					</select>
+				</div></br>
+				
+				<div class="channel">
+					<p class="title" id="channel_title">CHANNEL</p>
+					<img class="channel_button" id="channel_down" src="../public/images/down_button.png" style="">
+					<input READONLY	id="channel_val" onfocus="javascript:blur();" value=1>
+					<img class="channel_button" id="channel_up" src="../public/images/up_button.png" style="">				
+				</div>	
+						
+			</div>		
+			
+			<div class="push_bt">
+				<button class="push_bts" id="manual_auto" value=0>MANUAL</button>
+				<button class="push_bts" id="clear" value=0>CLEAR</button>
+				<button class="push_bts" id="marking" value=0>MARKING</button>
+				<button class="push_bts" id="start_stop" value=0>START</button>
+			</div>
+		</div>
+		<!-- Airgun Dialog end -->
+		
+		<!-- Help Dialog start -->
+		<div id="help_dlg">
+			<div id="ip1_title">
+				<label> Wired IP</label> <input READONLY  id="my-ip-wired" onfocus="javascript:blur();" value=0>
+			</div>
+			<div id="ip2_title">
+				<label> Wireless IP</label> <input READONLY  id="my-ip-wireless" onfocus="javascript:blur();" value=0>
+			</div>	
+			<!--
+			<button class="help_bts" id="help-set">System Settings</button></br>
+			-->
+			<button class="help_bts" id="help-man">Program Manual</button></br>
+			<button class="help_bts" id="help-exit">Program Exit</button>
+		</div>	
+		<!-- Help Dialog end -->
+		
+		<!-- Alert Dialog -->
+		<div id="alert_dlg" title="Alert">
+			<p id="alert_message">Are you sure?</p>
+			<div class="alert_bts_div">
+				<button class="alert_bts" id="yes" onfocus="javascript:blur();">Yes</button>
+				<button class="alert_bts" id="no">No</button>	
+			</div>
+		</div>
+				
+		<!--  tabindex="-1"  -->
+		<div id="validate_dlg">
+			
+			<table id="validate_table" style="width:100%; height: 70%;" onfocus="javascript:blur();">
+				<tr>
+					<th></th>
+					<th>Date</th> 
+					<th>Password</th>
+					<th></th>
+				</tr>
+				<tr>
+					<td  class="valid_title">1st Date</td>
+					<td ><input class="validate_inputs" id="stop_date_1" value="-" tabindex="-1" onfocus="javascript:blur();"/></td>
+					<td ><input class="validate_pass" id="valid_1" value="-"/></td>
+					<td > <button class="date_toggles" id="date_1" value=0 "javascript:blur();">Disable</button> </td>
+				</tr>
+				<tr>
+					<td  class="valid_title">2nd Date</td>
+					<td ><input class="validate_inputs" id="stop_date_2" value="-" tabindex="-1" onfocus="javascript:blur();" /></td>
+					<td ><input class="validate_pass" id="valid_2" value="-"/></td>
+					<td > <button class="date_toggles" id="date_2" value=0>Disable</button></td>
+				</tr>
+				<tr>
+					<td  class="valid_title">3rd Date</td>
+					<td ><input class="validate_inputs" id="stop_date_3" value="-" tabindex="-1" onfocus="javascript:blur();"/></td>
+					<td ><input class="validate_pass" id="valid_3" value="-"/></td>
+					<td > <button class="date_toggles" id="date_3" value=0>Disable</button></td>
+				</tr>
+				<tr>
+					<td  class="valid_title">4th Date</td>
+					<td ><input class="validate_inputs" id="stop_date_4" value="-" tabindex="-1" onfocus="javascript:blur();"/></td>
+					<td ><input class="validate_pass" id="valid_4" value="-" /></td>
+					<td > <button class="date_toggles" id="date_4" value=0>Disable</button> </td>
+				</tr>
+				<tr>
+					<td  class="valid_title">5th Date</td>
+					<td ><input class="validate_inputs" id="stop_date_5" value="-" tabindex="-1" onfocus="javascript:blur();"/></td>
+					<td ><input class="validate_pass" id="valid_5" value="-" /></td>
+					<td > <button class="date_toggles" id="date_5" value=0>Disable</button> </td>
+				</tr>
+				<tr>
+					<td  class="valid_title">6th Date</td>
+					<td ><input class="validate_inputs" id="stop_date_6" value="-" tabindex="-1" onfocus="javascript:blur();"/></td>
+					<td ><input class="validate_pass" id="valid_6" value="-" /></td>
+					<td > <button class="date_toggles" id="date_6" value=0>Disable</button> </td>
+				</tr>
+			</table>
+			
+		</div>
+				
+		<!-- password input dialog -->
+		<div id="pass_input_dlg">
+			<div class="pass_input0_div">
+				<label id="pass_input_lab" for="pass_input">Password </label>
+				<input type="password" name="pass_input" id="pass_input" value="" maxlength="10"/>
+			</div>		
+			<div class="pass_input_bts_div">
+				<button class="pass_input_bts" id="pass_input_apply">Apply</button>
+				<button class="pass_input_bts" id="pass_input_cancel">Cancel</button>
+			</div>
+		</div>
+		
+		<!-- Password Dialog start -->
+		<div id="password_dlg">
+			<div class="pass_input_div">
+				<span></span>
+				<label id="pass_old_lab" for="pass_old">Old Password </label>
+				<input type="password" class="pass_inputs" name="old" id="pass_old" value="" maxlength="10"/></br>
+				<label id="pass_new_lab" for="pass_new">New Password </label>
+				<input type="password" class="pass_inputs" name="new" id="pass_new" value="" maxlength="10"/></br>
+				<label id="pass_confirm_lab" for="pass_confirm">Confirm New Password</label>
+				<input type="password" class="pass_inputs" name="confirm" id="pass_confirm" value="" maxlength="10"/></br>
+			</div>
+			<div class="pass_bts_confirm_div">
+				<button class="pass_bts" id="pass_apply">Apply</button>
+				<button class="pass_bts" id="pass_cancel">Cancel</button>
+			</div>
+			<div class="pass_bts_init_div">
+				<label id="pass_init_lab" for="pass_init">INIT</label>
+				<button class="pass_init_bts" id="pass_admin">Admin</button>
+				<button class="pass_init_bts" id="pass_engi">Engineer</button>
+				<button class="pass_init_bts" id="pass_oper" disabled>Operator</button>
+			</div>
+		</div>
+		
+		<div id="message_alert_dlg">
+			<p id="alert_content">Password Change</p>
+		</div>
+		<!-- Password Dialog End -->
+		
+		
+		<!-- footer menu ( MENU, START ) -->
+		<div class="bottom_menu">
+			<div id="menu_3_div">
+				<ul id="menu_3">
+					<li id="menu_title_3">
+					MENU					
+					<ul id="menu_sub_3">
+					  <li class="sub_menu_3" id="CONTROL">CONTROL
+						<ul>
+							<li class="control_sub" id="menu_video">Video</li>
+							<li class="control_sub" id="menu_ejecting">Ejecting</li>
+							<li class="control_sub" id="menu_camera">Camera</li>
+							<li class="control_sub" id="menu_lighting">Lighting</li>
+							<li class="control_sub" id="menu_mode">Mode</li>
+							<li class="control_sub" id="menu_cleaning">Cleaning</li>
+						</ul>
+					  </li>
+					  <li class="sub_menu_3" id="MAINTAIN">MAINTAIN
+						<ul>
+							<li class="airgun_sub" id="menu_airgun">AIRGUN</li>
+						</ul>
+					  </li>
+					  <li class="ui-state-disabled" id="STATE">STATE</li>
+					  <li class="sub_menu_3" id="CONFIG">CONFIG
+						<ul>
+							<li class="config_sub" id="menu_model">Model</li>
+							<li class="ui-state-disabled" id="menu_language">Language</li>
+							<li class="config_sub" id="menu_password">Password</li>
+						</ul>
+					  </li>
+									  
+					</ul>
+					</li>
+				</ul>
+			</div>
+			<div id="menu_4_div">	
+				<ul id="menu_4">
+					<li id="menu_title_4">
+						START
+						<ul id="menu_sub_4">
+							<li class="control_sub" id="menu_cleaning">Cleaning</li>
+							<li class="sub_menu_4" id="System_off">Shutdown</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<!-- VIDEO Dialog start -->
+		<div id="video_dlg" title="VIDEO">
+			<!-- Alert Dialog -->
+			<div id="vd_alert_dlg" title="Alert">
+				<span id="vd_alert_message"><p><b>Warning!!!</b></p></span>
+			</div>
+			
+			<canvas id="myCanvas1" width="1024" height="300" style="position:absolute; top:11px; left:0px; background-color:black;">
+				Your browser does not support the HTML5 canvas tag.
+			</canvas>
+			
+			<div class="vd_top_bt">		
+				<button class="vd_bt" id="all_save" onfocus="javascript:blur();" > All Save </button>
+				<button class="vd_bt" id="FIX"> FIX </button>
+			</div>	
+			
+			<div class="dv_type">
+				<p class="video_title">Type</p>
+				<button class="vd_bt" id="rgb_type" >RGB</button>
+			</div>	
+			
+			<div class="dv_Part">
+				<p class="video_title">Part</p>
+				<button class="vd_bt" id="vd_part" >A</button>
+			</div>	
+			
+			<div class="dv_gain">
+				<p class="video_title">Gain</p>
+				<button class="vd_bt" id="gain">SAVE</button>
+			</div>		
+			
+			<div class="dv_comp">
+				<p class="video_title">Component</p>
+				<select id="component_list">
+					<!--
+					<option value=1 selected="selected">1</option>
+					<option value=2>2</option>
+					<option value=3>3</option>
+					<option value=4>4</option>
+					<option value=5>5</option>
+					<option value=6>6</option>
+					<option value=7>7</option>
+					<option value=8>8</option>
+					-->
+				</select>
+			</div>
+			
+			<input READONLY id="bg_f_display_val" onfocus="javascript:blur();" /> 
+			<button class="vd_bt" id="dv_bg_f_bt">Background Front</button>
+					
+			<div id="dv_bg_f_dlg">
+				<div id="bgf_slider"> </div></br>
+				<div id="bgf-bt">		
+					<img class="bg_f_arrow_button" id="bg_f_down" src="../public/images/down_button.png" style="">
+					<input READONLY id="bg_f_val" onfocus="javascript:blur();" value=512>
+					<img class="bg_f_arrow_button" id="bg_f_up" src="../public/images/up_button.png" style="">
+				</div>	
+			</div>	
+			
+			<div class="dv_form">
+				<p class="video_title">Form</p>
+				<button class="vd_bt" id="form" value=0>Corr.</button>
+			</div>
+		
+			<input READONLY id="bg_r_display_val" onfocus="javascript:blur();" /> 
+			<button class="vd_bt" id="dv_bg_r_bt">Background Rear</button>
+			<div id="dv_bg_r_dlg">
+				<div id="bgr_slider"> </div></br>
+				<div id="bgr-bt">
+					<img class="bg_r_arrow_button" id="bg_r_down" src="../public/images/down_button.png" style="">
+					<input READONLY id="bg_r_val" onfocus="javascript:blur();" value=512>
+					<img class="bg_r_arrow_button" id="bg_r_up" src="../public/images/up_button.png" style="">
+				</div>
+			</div>
+			
+			<!-- Fix Timer Dialog start -->
+			<div id="fix_timer_dlg" title="MODE INIT">
+				<div class="fix_text_div">
+					<p id="fix_text">Fix Timer </p>
+				</div>
+			</div>
+			<!-- Fix Timer Dialog end -->
+			
+		</div>
+		<!-- VIDEO Dialog end -->
+	</body>
+</html>
+
