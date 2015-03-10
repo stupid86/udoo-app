@@ -2,7 +2,7 @@
 /*
  * Module dependencies.
  */
-var test_val;
+
 // express up version
 var express = require('express');
 var http = require('http');

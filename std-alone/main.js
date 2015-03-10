@@ -81,8 +81,11 @@ var pass_match_processes = 	{
 							};
 var pass_match_process;		// password check process
 
-var alert_flag = { mode:0, pass_change:1, init:2, date_time:3 };
-var alert_parent;	// alert dialog : flag store
+var alert_flag = 	{ 
+						mode:0, pass_change:1, init:2, 
+						date_time:3, mode_change:4 
+					};
+var alert_flag_parent;	// alert dialog : flag store
 
 var user = { name:' ', past_name:' ' };
 
@@ -149,6 +152,7 @@ var mode_names = 	{
 						mode_5:'MODE 5', mode_6:'MODE 6', mode_7:'MODE 7', mode_8:'MODE 8'
 					};
 var past_mode_name;
+var select_mode_id;
 
 // Mode Func obj, value					
 var mode_func_addr = { backup:'0x006' , recovery:'0x007', load:'0x008', source:'0x009'};
@@ -2082,7 +2086,7 @@ function fun()
 	});
 	
 	$('#dt_apply').on('click', function() {
-		alert_parent = alert_flag.date_time;
+		alert_flag_parent = alert_flag.date_time;
 		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 	
@@ -2598,7 +2602,7 @@ function fun()
 			
 			$('#target_mode').val(mode_names["mode_"+(mode_val.mode+1)]);
 			
-			alert_parent = alert_flag.mode;
+			alert_flag_parent = alert_flag.mode;
 		},
 		close: function( event, ui ) {
 			$('#mode_list').html('');
@@ -4966,7 +4970,7 @@ function fun()
 		// console.log('select accout id : ' + account_id.select);
 		
 		pass_init_id = this.id;
-		alert_parent = alert_flag.pass_init;
+		alert_flag_parent = alert_flag.pass_init;
 		
 		if( account_id.current == 'admin' ) {
 			$( alert_dlg ).dialog( "open" );
@@ -5088,15 +5092,53 @@ function fun()
 		}
 		else {	// pass value ok 
 			console.log('pass value ok!!');
-			alert_parent = alert_flag.pass_change;
+			alert_flag_parent = alert_flag.pass_change;
 			$( alert_dlg ).dialog( "open" );
 		}
 	});
 	
 	$(".alert_bts").click(function() {
 		
-		switch( alert_parent ) {
+		switch( alert_flag_parent ) {
 			
+			case alert_flag.mode_change:
+				
+				switch(this.id) {
+					
+					case 'yes':
+						mode_val.mode = $('#'+select_mode_id).val();
+						$("#mode_menu_title").html( $('#'+select_mode_id).html());
+						if( mode_val.past_val != mode_val.mode ) {
+							
+							All_Dialog_Close();
+							//console.log(this.id);	// this.id Mode_1 ~ 8
+										
+							// mode value init
+							Command = '4';
+							address = mode_addr.mode;				// address store
+							value =  mode_val.mode.toString();  	// must be "toString()"
+							mode_val.past_val = mode_val.mode;
+							socket_emit(ID, Command, address, value);
+							
+							error_check_func();
+							
+							step_init('step-1st');
+							setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
+										
+						}
+						mode_val.past_val = mode_val.mode;
+						break;
+					
+					case 'no':
+						
+						break;
+					
+					default: break;
+					
+				}
+				
+				break;
+				
 			case alert_flag.mode: 	
 					
 					switch(this.id) {
@@ -8068,38 +8110,9 @@ function fun()
 	});
 		
 	$(".mode_list_sub").click( function() {
-		
-		mode_val.mode = $('#'+this.id).val();
-		$("#mode_menu_title").html( $('#'+this.id).html());
-		if( mode_val.past_val != mode_val.mode ) {
-			
-			All_Dialog_Close();
-			//console.log(this.id);	// this.id Mode_1 ~ 8
-						
-			// mode value init
-			Command = '4';
-			address = mode_addr.mode;				// address store
-			value =  mode_val.mode.toString();  	// must be "toString()"
-			mode_val.past_val = mode_val.mode;
-			socket_emit(ID, Command, address, value);
-			
-			error_check_func();
-			
-			step_init('step-1st');
-			setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
-			
-			/*
-			cleaning_maual_onoff(1);
-			$("#mode_init_clean_on").html("Cleaning On : ").append(document.createTextNode( "OK!!" ));
-						
-			modechange_state = modechange_states.cleaning_off;
-			mode_timer = setInterval( modechange_func, 5000);
-			
-			//$("span.ui-dialog-title").text("MODE INIT");						
-			$(mode_init_dlg).dialog("open");
-			*/
-		}
-		mode_val.past_val = mode_val.mode;
+		select_mode_id = this.id;
+		alert_flag_parent = alert_flag.mode_change;
+		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 		
 	/* Model click event start */

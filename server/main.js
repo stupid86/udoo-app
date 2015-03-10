@@ -81,8 +81,11 @@ var pass_match_processes = 	{
 							};
 var pass_match_process;		// password check process
 
-var alert_flag = { mode:0, pass_change:1, init:2, date_time:3 };
-var alert_parent;	// alert dialog : flag store
+var alert_flag = 	{ 
+						mode:0, pass_change:1, init:2, 
+						date_time:3, mode_change:4 
+					};
+var alert_flag_parent;	// alert dialog : flag store
 
 var user = { name:' ', past_name:' ' };
 
@@ -124,6 +127,21 @@ var Eject_Feed_onoff_val = { EjectOnOff:0, FeedOnOff:0 };
 // Eject and Feed on off ID value 
 var ID_Eject_Feed_onoff_addr = { EjectOnOff:'#eject', FeedOnOff:'#feed' };
 
+// Mode Name Read obj : 0x020(count 20) ~ 0x0BF
+var mode_name_addr = 	{ 
+							mode_1:'0x020', mode_2:'0x034', mode_3:'0x048', 
+							mode_4:'0x05c', mode_5:'0x070', mode_6:'0x084', 
+							mode_7:'0x098', mode_8:'0x0ac'
+						};
+
+var mode_name_val = 	{ 
+							mode_1:'', mode_2:'', mode_3:'', 
+							mode_4:'', mode_5:'', mode_6:'', 
+							mode_7:'', mode_8:''
+						};
+						
+var mode_name_arr = new Array(20);
+
 // Mode object value
 var mode_addr = { mode:'0x005' };
 var mode_val = { mode: 0, past_val: 0 };
@@ -134,6 +152,7 @@ var mode_names = 	{
 						mode_5:'MODE 5', mode_6:'MODE 6', mode_7:'MODE 7', mode_8:'MODE 8'
 					};
 var past_mode_name;
+var select_mode_id;
 
 // Mode Func obj, value					
 var mode_func_addr = { backup:'0x006' , recovery:'0x007', load:'0x008', source:'0x009'};
@@ -980,7 +999,8 @@ var device_objects 	=	{
 							R_L_C_CamVal: R_L_C_CamVal,	Eject_Feed_onoff_val: Eject_Feed_onoff_val, 
 							ejecting_val: ejecting_val, cleaning_val:cleaning_val, lighting_val:lighting_val, 
 							camera_onoff_val:camera_onoff_val, model_val: model_val, 
-							back_front_val: back_front_val, back_rear_val: back_rear_val
+							back_front_val: back_front_val, back_rear_val: back_rear_val,
+							mode_name_val: mode_name_val
 						};
 var device_object_val;
 	
@@ -1291,6 +1311,7 @@ $(document).ready( function() {
 
 function fun()
 {		
+	
 	startTime();	// Timer Function
 	
 	var socket;		// socket.io socket
@@ -1369,7 +1390,7 @@ function fun()
 		socket.emit('validate_read');	// validate read request web -> server
 		
 		setTimeout(Read_All_AVR_M_Data, 800);	// Read avr data
-		progressTimer = setInterval( progress, 60);	// progress Timer set
+		progressTimer = setInterval( progress, 100);	// progress Timer set
 		
 		// modify 0114
 		// err_check_timer init
@@ -1406,7 +1427,7 @@ function fun()
 		switch( pass_match_process ) {
 			
 			case pass_match_processes.date_time: 
-					if ( data.flag == '1' ) {	// match ok
+					if ( data.flag == '1' ) {	   // match ok
 						$(date_config_dlg).dialog("open");	
 					} else {	// not match
 						$("#alert_content").html('Passwords do not match.');
@@ -1601,7 +1622,7 @@ function fun()
 		var cmd = '5';
 		var addr = '0x000';
 		var val = '0';	// must be toString()
-		console.log('err check emit!');
+		// console.log('err check emit!');
 		
 		if( video_dlg_open_flag != 1 ) {
 			socket_emit(ID, cmd, addr, val);
@@ -1881,6 +1902,19 @@ function fun()
 			duration: 200
 		},
 		open: function( event, ui ) {
+			
+			var now = new Date();
+			var year= now.getFullYear();
+			var mon = (now.getMonth()+1)>9 ? ''+(now.getMonth()+1) : '0'+(now.getMonth()+1);
+			var day = now.getDate()>9 ? ''+now.getDate() : '0'+now.getDate();
+			
+			var hour=now.getHours();		// UTC + 9 hours == korea time
+			var min=now.getMinutes();
+			var sec=now.getSeconds();
+			min = checkTime(min);
+			sec = checkTime(sec);
+			
+			/*
 			var check_time_val = $("#date").val();
 	
 			var day = parseInt(check_time_val.slice(0,2));
@@ -1889,16 +1923,16 @@ function fun()
 			var hour = parseInt(check_time_val.slice(11,13));
 			var min = parseInt(check_time_val.slice(14,17));
 			var sec = parseInt(check_time_val.slice(18,20));
-								
+			*/					
 			$('#day_val').val(day);
-			$('#month_val').val(month);
+			$('#month_val').val(mon);
 			$('#year_val').val(year);
 			$('#hour_val').val(hour);
 			$('#min_val').val(min);
 			$('#sec_val').val(sec);
 			
 			date_config_vals.year = year;
-			date_config_vals.month = month;
+			date_config_vals.month = mon;
 			date_config_vals.day = day;
 			
 			date_config_vals.hour = hour;
@@ -1928,8 +1962,11 @@ function fun()
 				
 				default : break;
 			}
-						
-			$(pass_input_dlg).dialog('open');
+			
+			if( $(pass_input_dlg).dialog("isOpen") != true) {
+				$(pass_input_dlg).dialog('open');
+			}
+			
 		}	
 	});
 	
@@ -2009,11 +2046,17 @@ function fun()
 			default: break;				
 		}
 		date_and_time_check(value_id);
-		
+		date_time_str = 'sudo date -s \''+date_config_vals['year']+'-'+date_config_vals['month']
+						+'-'+date_config_vals['day']+' '+date_config_vals['hour']
+						+':'+date_config_vals['min']+':'+date_config_vals['sec']+'\'';
 		$('#'+value_id+'_val').val(date_config_vals[value_id]);
 	}
 	
 	$('.date_bt').on('mouseup', function() {
+		clearInterval(timer);
+	});
+	
+	$('.date_bt').on('mouseleave', function() {
 		clearInterval(timer);
 	});
 	
@@ -2029,11 +2072,7 @@ function fun()
 	
 	$('.date_bt').on('click', function() {
 		clearInterval(timer);
-			
-		date_time_str = 'sudo date -s \''+date_config_vals['year']+'-'+date_config_vals['month']
-						+'-'+date_config_vals['day']+' '+date_config_vals['hour']
-						+':'+date_config_vals['min']+':'+date_config_vals['sec']+'\'';
-		
+				
 		console.log( date_time_str );
 	});
 		
@@ -2043,11 +2082,11 @@ function fun()
 		$('#'+this.id).select();
 		
 	}).on('change', function() {
-		date_config_vals[this.id.slice(0,this.id.indexOf("_"))] = $('#'+this.id).val();
+		// date_config_vals[this.id.slice(0,this.id.indexOf("_"))] = $('#'+this.id).val();
 	});
 	
 	$('#dt_apply').on('click', function() {
-		alert_parent = alert_flag.date_time;
+		alert_flag_parent = alert_flag.date_time;
 		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 	
@@ -2171,7 +2210,7 @@ function fun()
 	
 	socket.on('err_check_response', function(data) {
 					
-		console.log('err_check_response: ' + data);
+		// console.log('err_check_response: ' + data);
 		var err_code_str = data;
 			
 		// clean_err_dlg, air_err_dlg, chute_err_dlg
@@ -2290,7 +2329,7 @@ function fun()
 			progressLabel.text( progressbar.progressbar( "value" ) + "%" );
 		},
 		complete: function() {
-			timer = setTimeout(progressClose, 80);
+			timer = setTimeout(progressClose, 500);
 		}
 	});  
 		
@@ -2563,7 +2602,7 @@ function fun()
 			
 			$('#target_mode').val(mode_names["mode_"+(mode_val.mode+1)]);
 			
-			alert_parent = alert_flag.mode;
+			alert_flag_parent = alert_flag.mode;
 		},
 		close: function( event, ui ) {
 			$('#mode_list').html('');
@@ -4931,7 +4970,7 @@ function fun()
 		// console.log('select accout id : ' + account_id.select);
 		
 		pass_init_id = this.id;
-		alert_parent = alert_flag.pass_init;
+		alert_flag_parent = alert_flag.pass_init;
 		
 		if( account_id.current == 'admin' ) {
 			$( alert_dlg ).dialog( "open" );
@@ -5053,15 +5092,53 @@ function fun()
 		}
 		else {	// pass value ok 
 			console.log('pass value ok!!');
-			alert_parent = alert_flag.pass_change;
+			alert_flag_parent = alert_flag.pass_change;
 			$( alert_dlg ).dialog( "open" );
 		}
 	});
 	
 	$(".alert_bts").click(function() {
 		
-		switch( alert_parent ) {
+		switch( alert_flag_parent ) {
 			
+			case alert_flag.mode_change:
+				
+				switch(this.id) {
+					
+					case 'yes':
+						mode_val.mode = $('#'+select_mode_id).val();
+						$("#mode_menu_title").html( $('#'+select_mode_id).html());
+						if( mode_val.past_val != mode_val.mode ) {
+							
+							All_Dialog_Close();
+							//console.log(this.id);	// this.id Mode_1 ~ 8
+										
+							// mode value init
+							Command = '4';
+							address = mode_addr.mode;				// address store
+							value =  mode_val.mode.toString();  	// must be "toString()"
+							mode_val.past_val = mode_val.mode;
+							socket_emit(ID, Command, address, value);
+							
+							error_check_func();
+							
+							step_init('step-1st');
+							setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
+										
+						}
+						mode_val.past_val = mode_val.mode;
+						break;
+					
+					case 'no':
+						
+						break;
+					
+					default: break;
+					
+				}
+				
+				break;
+				
 			case alert_flag.mode: 	
 					
 					switch(this.id) {
@@ -5121,7 +5198,30 @@ function fun()
 																mode_name_protocol += (mode_names[key] + ':');
 															}
 															
-															socket.emit('mode_name_save', mode_name_protocol);
+															// socket.emit('mode_name_save', mode_name_protocol);
+															
+															// mode name code modify
+															var dec;
+															dec = parseInt(mode_name_addr['mode_'+(parseInt(mode_val.mode)+1)], 16);
+															
+															for( var i=0; i<mode_name.length; i++ ) {
+																
+																mode_name_arr[i] = dec2hex(dec).toString();
+																Command = '4';
+																address = '0x'+mode_name_arr[i];		// addrss
+																value = mode_name[i].charCodeAt(0).toString();		// must be toString()
+																console.log('mode addr : '+address + ' : ' + value);
+																																
+																socket_emit(ID, Command, address, value);						
+																
+																dec++;
+															}
+															mode_name_arr[i] = dec2hex(dec).toString();
+															Command = '4';
+															address = '0x'+mode_name_arr[i];		// addrss
+															value = '0';
+															socket_emit(ID, Command, address, value);
+															
 															break;
 																			
 										default: break;
@@ -6745,18 +6845,35 @@ function fun()
 		// console.log('avr init func ..');	
 		// console.log('avr_addrs[4] : ' + avr_addrs[4]+':'+avr_addrs[4].length);
 		
+		
 		for(var i=0; i<avr_addrs.length; i++) {
 			// console.log('avr_addrs : ' + avr_addrs[i]);
 			// console.log('avr_address: '+ avr_addrs[i] + ' data : ' + avr_datas[i]);
 			
-			if( avr_addrs[i] == '0x005' ) {		// mode value
+			if( avr_addrs[i] >= '0x020' && avr_addrs[i] <= '0x033') {
+				mode_name_val.mode_1+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x034' && avr_addrs[i] <= '0x047' ) {
+				mode_name_val.mode_2+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x048' && avr_addrs[i] <= '0x05b' ) {
+				mode_name_val.mode_3+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x05c' && avr_addrs[i] <= '0x06f' ) {
+				mode_name_val.mode_4+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x070' && avr_addrs[i] <= '0x083' ) {
+				mode_name_val.mode_5+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x084' && avr_addrs[i] <= '0x097' ) {
+				mode_name_val.mode_6+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x098' && avr_addrs[i] <= '0x0ab' ) {
+				mode_name_val.mode_7+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] >= '0x0ac' && avr_addrs[i] <= '0x0bf' ) {
+				mode_name_val.mode_8+=(avr_datas[i]+', ');
+			} else if( avr_addrs[i] == '0x005' ) {		// mode value
 				
 				// MODE INIT
 				mode_val.mode = parseInt(avr_datas[i], 10);
 				// debug
 				// console.log('mode value: '+mode_val.mode);
 				
-			} else if( avr_addrs[i] == '0x002' ){	// model nir, stage, channel
+			} else if( avr_addrs[i] == '0x002' ) {	// model nir, stage, channel
 				
 				//console.log('model value : ' + avr_datas[i]);
 				model_val['nir'] = parseInt(avr_datas[i], 10);
@@ -7050,6 +7167,37 @@ function fun()
 			}
 			
 		}
+		
+		// mode name code modify
+		/*
+		console.log( 'mode_1 : ' + mode_name_val.mode_1);
+		console.log( 'mode_2 : ' + mode_name_val.mode_2);
+		console.log( 'mode_3 : ' + mode_name_val.mode_3);
+		console.log( 'mode_4 : ' + mode_name_val.mode_4);
+		console.log( 'mode_5 : ' + mode_name_val.mode_5);
+		console.log( 'mode_6 : ' + mode_name_val.mode_6);
+		console.log( 'mode_7 : ' + mode_name_val.mode_7);
+		console.log( 'mode_8 : ' + mode_name_val.mode_8);
+		*/
+		( function( mode_name_obj ) {
+			
+			for( var key in mode_name_obj ) {
+				var num;
+				var str='';
+				mode_name_obj[key] = mode_name_obj[key].split(',');
+				for( var i=0; i< 20; i++ ) {
+					num = parseInt(mode_name_obj[key][i], 10);
+					if( num == 0 ) {
+						str += String.fromCharCode(num);
+						break;
+					}	
+					str += String.fromCharCode(num);
+					
+				}
+				console.log('res string : '+ str);
+			}
+			
+		})( mode_name_val );
 		
 		
 		// account_menu_init : Operator, modify: 0126
@@ -7962,38 +8110,9 @@ function fun()
 	});
 		
 	$(".mode_list_sub").click( function() {
-		
-		mode_val.mode = $('#'+this.id).val();
-		$("#mode_menu_title").html( $('#'+this.id).html());
-		if( mode_val.past_val != mode_val.mode ) {
-			
-			All_Dialog_Close();
-			//console.log(this.id);	// this.id Mode_1 ~ 8
-						
-			// mode value init
-			Command = '4';
-			address = mode_addr.mode;				// address store
-			value =  mode_val.mode.toString();  	// must be "toString()"
-			mode_val.past_val = mode_val.mode;
-			socket_emit(ID, Command, address, value);
-			
-			error_check_func();
-			
-			step_init('step-1st');
-			setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
-			
-			/*
-			cleaning_maual_onoff(1);
-			$("#mode_init_clean_on").html("Cleaning On : ").append(document.createTextNode( "OK!!" ));
-						
-			modechange_state = modechange_states.cleaning_off;
-			mode_timer = setInterval( modechange_func, 5000);
-			
-			//$("span.ui-dialog-title").text("MODE INIT");						
-			$(mode_init_dlg).dialog("open");
-			*/
-		}
-		mode_val.past_val = mode_val.mode;
+		select_mode_id = this.id;
+		alert_flag_parent = alert_flag.mode_change;
+		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 		
 	/* Model click event start */
@@ -8754,6 +8873,7 @@ function fun()
 	// Help Dialog event start ============
 	socket.on('help_res', function(data) {		// help event response: server -> web
 		
+		console.log( data );
 		if( data.wired == 'Not connected.' )
 			$("#my-ip-wired").val(data.wired);
 		else $("#my-ip-wired").val(data.wired+':3000');
@@ -8800,8 +8920,40 @@ function fun()
 		socket_emit(protocol_HTML_server.ID, protocol_HTML_server.Command, protocol_HTML_server.device_address, protocol_HTML_server.value);
 	}
 	
+	function dec2hex(i) {
+		var result = "000";
+		if (i >= 0    && i <= 15) { 
+			result = "00" + i.toString(16); 
+		}
+		else { 
+			result = "0"  + i.toString(16); 
+		}
+		return result;
+	}
+
 	function Read_All_AVR_M_Data() {
 		
+		// Mode Name Read
+		for(var key in mode_name_addr) {
+			
+			var dec;
+			dec = parseInt(mode_name_addr[key], 16);
+			protocol_HTML_server.device_object = "mode_name_val";
+			for( var i=0; i<20; i++ ) {
+				mode_name_arr[i] = dec2hex(dec).toString();
+				
+				// Object value(device address)	
+				protocol_HTML_server.device_address = '0x'+mode_name_arr[i];
+				protocol_HTML_server.device_key = key;	// Object Member	
+				protocol_HTML_server.value ='0';		// don't care.
+				protocol_HTML_server.Command = '2';
+				ReadAVR_M_memory_image();
+				
+				dec++;
+			}
+			// console.log( 'addr : ' + mode_name_arr );
+		}
+				
 		// Mode value read
 		for(var key in mode_addr) {
 		
