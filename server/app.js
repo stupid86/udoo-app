@@ -1520,39 +1520,6 @@ io.sockets.on('connection', function(socket) {
 		});
 	});
 
-	/*
-	socket.on('validate_pass_check', function(webData) {
-		console.log( webData.state +','+ webData.val);
-
-		fs.readFile(validate_ps_path, function (err, data) {
-
-			if (err) throw err;
-
-			var validate_ps = data.toString().split(',');
-
-			console.log('validate password data :' + validate_ps.toString());
-			var validate_idx = 0, validate_idx_cnt = 0;
-			var valid_ps_flag = false;
-
-			for(var key in validate_ps) {
-
-				if ( validate_ps[key].toString() == webData.val ) {
-					validate_idx = validate_idx_cnt;
-					valid_ps_flag = true;
-				}
-				validate_idx_cnt++;
-
-			}
-
-			if ( valid_ps_flag == true ) {
-				socket.emit('validate_pass_res', { idx : validate_idx, acknack: ACK});
-			} else {
-				socket.emit('validate_pass_res', { idx : validate_idx, acknack: NACK});
-			}
-
-		});
-	});
-	*/
 	socket.on('validate_all_save', function(data) {
 
 		var stop_date = data.stop_date;
@@ -1809,7 +1776,7 @@ io.sockets.on('connection', function(socket) {
 												tx_vd_state = tx_vd_states.tx_data;
 												console.log('rx_serial_state is not init');
 
-												if( vd_tx_state_cnt > 5000 ) {
+												if( vd_tx_state_cnt > 4000 ) {
 													vd_tx_state_cnt = 0;
 
 													var i = tx_vd_data_array.indexOf(tx_vd_data_array[0]);

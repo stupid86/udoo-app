@@ -162,7 +162,9 @@ var mode_num;
 // date value
 var date_config_vals = { 
 					year:0, month:0, day:0, 
-					hour:0, min:0, sec:0
+					hour:0, min:0, sec:0,
+					past_year:0, past_month:0, past_day:0, 
+					past_hour:0, past_min:0, past_sec:0
 				};
 var date_time_config_str;
 var date_time_str;
@@ -1341,6 +1343,7 @@ function fun()
 			if ( validate_flag != true ) {
 				if ( current_account == accounts.operator ) {
 					$("#pass_input_dlg").dialog({ title: 'Program Password'});
+					$('#pass_input_lab').html('Validate Password : ');
 					pass_match_process = pass_match_processes.validate_unlock;
 					$(pass_input_dlg).dialog("open");
 					disableElements();
@@ -1361,6 +1364,23 @@ function fun()
 		} else if( event.keyCode == '13' ) {
 			console.log('event.keyCode: ' + event.keyCode);
 		}
+		
+		//$('#pass_input').val();
+		
+		/*
+		$("#pass_input").focus( function(){
+			$("#pass_input").attr('type','text');
+		});
+		$("#pass_input").blur( function(){
+			("#pass_input").attr('type','password');	
+		});
+		*/
+		/*
+		setTimeout( function() {
+			$("#pass_input").attr('type','password');	
+		}, 500);
+		*/
+		
 	});
 
 	/*
@@ -1380,9 +1400,9 @@ function fun()
 	// Connect Event
 	socket.on('connect', function(){
 	
-		//console.log('The successful connection');
+		// console.log('The successful connection');
 		
-		socket.emit('mode_name_read');	// mode name read request web -> server
+		// socket.emit('mode_name_read');	// mode name read request web -> server
 		
 		// 0113 modify
 		socket.emit('validate_onoff_check');	// validate read request web -> server
@@ -1390,7 +1410,7 @@ function fun()
 		socket.emit('validate_read');	// validate read request web -> server
 		
 		setTimeout(Read_All_AVR_M_Data, 800);	// Read avr data
-		progressTimer = setInterval( progress, 100);	// progress Timer set
+		progressTimer = setInterval( progress, 80);	// progress Timer set
 		
 		// modify 0114
 		// err_check_timer init
@@ -1487,7 +1507,7 @@ function fun()
 							
 						}
 						
-						account_id.past_id = $("#account_menu_title").html().toLowerCase();
+						account_id.past_id = account_id.current;
 						
 						$("#alert_content").html("Confirm Password");
 						$(message_alert_dlg).dialog("open");
@@ -1584,7 +1604,7 @@ function fun()
 	// Socket_emit Function
 	function socket_vd_emit(ID, Command, address, value) {
 		
-		console.log('socket_emit func');
+		// console.log('socket_emit func');
 		var data_length = address.length + value.length;
 		
 		// ID : Command :: data length ::: address+data ::::
@@ -1593,9 +1613,7 @@ function fun()
 			+ ( address + value )		
 		});
 			
-		console.log(STX + ':' + ID 
-			+ ':' + Command	+ ':' + data_length + ':' 
-			+ address + ':' + value + ':');	
+		// debug // console.log(STX + ':' + ID + ':' + Command	+ ':' + data_length + ':' 	+ address + ':' + value + ':');	
 						
 	}
 	
@@ -1613,7 +1631,7 @@ function fun()
 		nack_addr = address;
 		nack_value = value;
 		
-		// console.log(STX + ':' + ID + ':' + Command	+ ':' + data_length + ':' + address + ':' + value + ':');	
+		// debug // console.log(STX + ':' + ID + ':' + Command	+ ':' + data_length + ':' + address + ':' + value + ':');	
 	}
 	
 	// Error Check Function 
@@ -1866,6 +1884,7 @@ function fun()
 					
 	var normal_code = 'FFFF';
 	var err_dlg_id = [ '#clean_err_dlg', '#air_err_dlg', '#chute_err_dlg' ];
+	var err_video_flag = 0;
 	var err_airdlg_open_flag = 0;
 	var err_dlg_auto_close_flag = 0;
 	
@@ -1938,6 +1957,14 @@ function fun()
 			date_config_vals.hour = hour;
 			date_config_vals.min = min;
 			date_config_vals.sec = sec;
+			
+			date_config_vals.past_year = year;
+			date_config_vals.past_month = mon;
+			date_config_vals.past_day = day;
+			
+			date_config_vals.past_hour = hour;
+			date_config_vals.past_min = min;
+			date_config_vals.past_sec = sec;
 		},
 		close: function( event, ui ) {
 		
@@ -1953,11 +1980,13 @@ function fun()
 			
 			switch( account_id.select ) {
 				case 'admin' :
-					$("#pass_input_dlg").dialog({ title: 'Date Config [Admin]'});
+					$("#pass_input_dlg").dialog({ title: 'Date Configuration'});
+					$('#pass_input_lab').html('Admin Password : ');
 					break;
 				
 				case 'engineer':
-					$("#pass_input_dlg").dialog({ title: 'Date Config [Engineer]'});
+					$("#pass_input_dlg").dialog({ title: 'Date Configuration'});
+					$('#pass_input_lab').html('Engineer Password : ');
 					break;
 				
 				default : break;
@@ -2090,6 +2119,23 @@ function fun()
 		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 	
+	$('#dt_cancel').on('click', function() {
+		$('#day_val').val(date_config_vals.past_day);
+		$('#month_val').val(date_config_vals.past_month);
+		$('#year_val').val(date_config_vals.past_year);
+		$('#hour_val').val(date_config_vals.past_hour);
+		$('#min_val').val(date_config_vals.past_min);
+		$('#sec_val').val(date_config_vals.past_sec);
+		
+		date_config_vals.year = date_config_vals.past_year;
+		date_config_vals.month = date_config_vals.past_month;
+		date_config_vals.day = date_config_vals.past_day;
+		
+		date_config_vals.hour = date_config_vals.past_hour;
+		date_config_vals.min = date_config_vals.past_min;
+		date_config_vals.sec = date_config_vals.past_sec;
+	});
+	
 	var clean_err_dlg = $("#clean_err_dlg").dialog({
 		stack: false,
 		modal: true,
@@ -2212,7 +2258,7 @@ function fun()
 					
 		// console.log('err_check_response: ' + data);
 		var err_code_str = data;
-			
+				
 		// clean_err_dlg, air_err_dlg, chute_err_dlg
 		switch(err_code_str) {
 			
@@ -2267,6 +2313,10 @@ function fun()
 			case normal_code: 	// console.log('Normal State...');
 								err_dlg_auto_close_flag = 1;
 								all_err_dlg_close();
+								if( fix_flag != 1 && video_dlg_open_flag==1) {
+									if ( err_video_flag == 1 ) 
+										component_send();
+								}
 								break;
 			
 			default: 	//err_code.chute
@@ -2393,7 +2443,7 @@ function fun()
 		modal: false,
 		draggable: false,
 		position : { my: "center center", at: "center center" },
-		width:500,
+		width:700,
 		height:310,
 		show: {
 			effect: "none",
@@ -2417,13 +2467,13 @@ function fun()
 				case pass_match_processes.account:	
 						switch( account_id.select ) {
 							case 'admin' :
-								//$("span.ui-dialog-title").text('Log On Admin');	
-								$("#pass_input_dlg").dialog({ title: 'Log On Admin'});
+								$("#pass_input_dlg").dialog({ title: 'Log On Account'});
+								$('#pass_input_lab').html('Admin Password : ');
 								break;
 							
 							case 'engineer':
-								//$("span.ui-dialog-title").text('Log On Engineer');
-								$("#pass_input_dlg").dialog({ title: 'Log On Engineer'});
+								$("#pass_input_dlg").dialog({ title: 'Log On Account'});
+								$('#pass_input_lab').html('Engineer Password : ');
 								break;
 							
 							default : break;
@@ -2432,7 +2482,6 @@ function fun()
 				
 				default: break;
 			}
-			
 			
 			$('#pass_input').val('');
 			//socket.emit('onboard_on');
@@ -2552,21 +2601,13 @@ function fun()
 			duration: 200
 		},
 		closeText: null,
-		closeOnEscape: false,
-		buttons: {
-			Ok: function() {
-			  $( this ).dialog( "close" );
-			}
-		},	
-		close: function( event, ui ) {
-			/*
-			switch() {
-				$(pass_input_dlg).dialog("open");
-			}
-			*/
-		}
+		closeOnEscape: false
 	});
 	
+	$("#message_alert_btn").click( function() {
+		$( message_alert_dlg ).dialog( "close" );
+	});
+		
 	// mode_copy dialog init start ============
 	var mode_copy_dlg = $("#mode_copy_dlg").dialog({
 		stack: false,
@@ -2601,7 +2642,7 @@ function fun()
 			$('#mode_list').selectmenu('refresh', true);
 			
 			$('#target_mode').val(mode_names["mode_"+(mode_val.mode+1)]);
-			
+						
 			alert_flag_parent = alert_flag.mode;
 		},
 		close: function( event, ui ) {
@@ -2611,7 +2652,7 @@ function fun()
 	
 	$( "#mode_list" ).selectmenu({
 		select: function( event, ui ) {},
-		width : $(this).width() - 200,
+		width : $(this).width() - 200
 	}).on( "selectmenuselect", function( event, ui ) {
 		console.log('this.value : '+this.value);
 		
@@ -2624,7 +2665,6 @@ function fun()
 		socket_emit(ID, Command, address, value);
 	
 	});
-	
 	
 	// mode_copy dialog init end ============
 			
@@ -3226,11 +3266,9 @@ function fun()
 		fix_timer_cnt++;
 		console.log(fix_timer_cnt);
 		$("#fix_text").html("Fix Timer : ").append(document.createTextNode( (13-fix_timer_cnt) +'' ));
-		//$("#fix_text").html("Fix Timer : ").append(document.createTextNode( fix_timer_cnt +'' ));
-		
+				
 		if( fix_timer_cnt > 12 ) {
-			
-			// $("#fix_text").html("Compliete");
+				
 			fix_flag = 0;
 			fix_timer_cnt = 0;
 			component_send();
@@ -3539,7 +3577,6 @@ function fun()
 		console.log('back_front_val high');
 		socket_vd_emit(ID, Command, address, value);
 	
-		//component_send();
 	});
 	
 	$( "#bgr_slider" ).on( "slidestop", function( event, ui ) {
@@ -3557,7 +3594,6 @@ function fun()
 		console.log('back_rear_val high');
 		socket_vd_emit(ID, Command, address, value);
 	
-		//component_send();
 	});
 	
 	$( "#component_list" ).selectmenu({
@@ -3652,8 +3688,7 @@ function fun()
 		value = video_val.gain.toString();
 		socket_vd_emit(ID, Command, address, value);
 		// gain value emit end
-		
-		//component_send();
+				
 		img_recv_start();
 											
 	});
@@ -3980,7 +4015,13 @@ function fun()
 		
 		image_recv_comp_flag = 1;
 		
-		if( fix_flag != 1 && video_dlg_open_flag==1) component_send();			
+		if( err_code_str == normal_code ) {
+			err_video_flag = 0;
+			if( fix_flag != 1 && video_dlg_open_flag==1) component_send();
+		} else {
+			err_video_flag = 1;
+		}
+			
 	});
 	
 	// Camera A, B choice, toggle
@@ -4032,8 +4073,6 @@ function fun()
 		$("#component_list option[value="+video_val.html_component+"]").prop("selected", true);
 		$('#component_list').selectmenu('refresh', true);
 		
-		//component_send();
-		
 	});
 	
 	// Save	
@@ -4068,20 +4107,17 @@ function fun()
 			
 		}
 		
-		//component_send();
 		img_recv_start();
 		
 	});
 	
 	$("#dv_bg_f_bt").click(function() {
 		Vd_Dialog_Close();
-		// $("span.ui-dialog-title").text('Background Front');		// title change
 		$( bg_f_dlg ).dialog( "open" );		// dialog open
 	});
 	
 	$("#dv_bg_r_bt").click(function() {
 		Vd_Dialog_Close();
-		// $("span.ui-dialog-title").text('Background Rear');		// title change
 		$( bg_r_dlg ).dialog( "open" );		// dialog open
 	});
 	
@@ -4136,7 +4172,7 @@ function fun()
 			// video signal form select end
 
 			img_recv_start();	
-			//component_send();
+			
 		}
 		
 	});
@@ -4280,8 +4316,7 @@ function fun()
 		value = back_front_val.bg_f_h.toString();
 		console.log('back_front_val high');
 		socket_vd_emit(ID, Command, address, value);
-		
-		//component_send();
+				
 		img_recv_start();		
 	});
 	
@@ -4421,7 +4456,7 @@ function fun()
 		socket_vd_emit(ID, Command, address, value);
 		
 		img_recv_start();
-		//component_send();
+		
 	});
 	
 	/* List menu click event 
@@ -4469,13 +4504,11 @@ function fun()
 			pass_match_process = pass_match_processes.validate;
 			
 			if( current_account == accounts.admin ) {
-				$("#pass_input_dlg").dialog({ 
-					title: 'Validate Config [Admin]'
-				});
+				$("#pass_input_dlg").dialog({ title: 'Validate Configuration'});
+				$('#pass_input_lab').html('Admin Password : ');
 			} else {
-				$("#pass_input_dlg").dialog({ 
-					title: 'Validate Config [Engineer]'
-				});
+				$("#pass_input_dlg").dialog({ title: 'Validate Configuration'});
+				$('#pass_input_lab').html('Engineer Password : ');
 			}
 			
 			$(pass_input_dlg).dialog("open");
@@ -4497,13 +4530,11 @@ function fun()
 			pass_match_process = pass_match_processes.validate;
 			
 			if( current_account == accounts.admin ) {
-				$("#pass_input_dlg").dialog({ 
-					title: 'Validate Config [Admin]'
-				});
+				$("#pass_input_dlg").dialog({ title: 'Validate Configuration'});
+				$('#pass_input_lab').html('Admin Password : ');
 			} else {
-				$("#pass_input_dlg").dialog({ 
-					title: 'Validate Config [Engineer]'
-				});
+				$("#pass_input_dlg").dialog({ title: 'Validate Configuration'});
+				$('#pass_input_lab').html('Engineer Password : ');
 			}
 			$(pass_input_dlg).dialog("open");
 						
@@ -4760,6 +4791,7 @@ function fun()
 			// console.log(parseInt( $("#date").val().slice(6,10)));
 			if( $("#date").val().slice(6,10) != '1970' ) {
 				$("#pass_input_dlg").dialog({ title: 'Program Password'});
+				$('#pass_input_lab').html('Validate Password : ');
 				$(pass_input_dlg).dialog("open");	
 			} 
 			disableElements();
@@ -4830,7 +4862,7 @@ function fun()
 		}
 				
 		validate_check_program();
-		
+		/*
 		for(var key in valid_flag) {
 			if( date_onoff_vals[key] != 0 ) {
 				if ( valid_flag[key] != true ) {
@@ -4845,6 +4877,7 @@ function fun()
 			// console.log(parseInt( $("#date").val().slice(6,10)));
 			if( $("#date").val().slice(6,10) != '1970' ) {
 				$("#pass_input_dlg").dialog({ title: 'Program Password'});
+				$('#pass_input_lab').html('Validate Password : ');
 				$(pass_input_dlg).dialog("open");	
 			} 
 			disableElements();
@@ -4852,7 +4885,7 @@ function fun()
 		} else {
 			enableElements();
 		}
-		
+		*/
 	});
 				
 	$(".date_toggles").click(function() {
@@ -5197,8 +5230,9 @@ function fun()
 															for(var key in mode_names) {
 																mode_name_protocol += (mode_names[key] + ':');
 															}
-															
-															// socket.emit('mode_name_save', mode_name_protocol);
+															mode_name_protocol = mode_name_protocol.slice(0, -1);
+															console.log( 'mode_name_protocol : ' + mode_name_protocol); 
+															socket.emit('mode_name_save', mode_name_protocol);
 															
 															// mode name code modify
 															var dec;
@@ -5210,7 +5244,7 @@ function fun()
 																Command = '4';
 																address = '0x'+mode_name_arr[i];		// addrss
 																value = mode_name[i].charCodeAt(0).toString();		// must be toString()
-																console.log('mode addr : '+address + ' : ' + value);
+																// console.log('mode addr : '+address + ' : ' + value);
 																																
 																socket_emit(ID, Command, address, value);						
 																
@@ -6772,7 +6806,8 @@ function fun()
 	socket.on('Ack', function(data) {
 		
 		AckNack = ACK;
-		// console.log(data.message);
+		
+		// debug // console.log('ACK : '+data.message);
 		//$(device_addr_AckNack).val("ACK");
 		//$(device_addr_AckNack).css("background", "#9FF781");
 		//timer = setInterval(AckNack_Check_Func, 500);
@@ -6783,7 +6818,7 @@ function fun()
 	socket.on('Nack', function(data) {
 		
 		AckNack = NACK;
-		console.log('NACK: '+data.message);
+		// debug // console.log('NACK : '+data.message);
 		
 		// socket_emit(ID, Command, nack_addr, nack_value);
 		//$(device_addr_AckNack).val("NACK");
@@ -6844,12 +6879,12 @@ function fun()
 		// debug
 		// console.log('avr init func ..');	
 		// console.log('avr_addrs[4] : ' + avr_addrs[4]+':'+avr_addrs[4].length);
-		
-		
+						
 		for(var i=0; i<avr_addrs.length; i++) {
 			// console.log('avr_addrs : ' + avr_addrs[i]);
 			// console.log('avr_address: '+ avr_addrs[i] + ' data : ' + avr_datas[i]);
 			
+			// mode name read
 			if( avr_addrs[i] >= '0x020' && avr_addrs[i] <= '0x033') {
 				mode_name_val.mode_1+=(avr_datas[i]+', ');
 			} else if( avr_addrs[i] >= '0x034' && avr_addrs[i] <= '0x047' ) {
@@ -6866,6 +6901,7 @@ function fun()
 				mode_name_val.mode_7+=(avr_datas[i]+', ');
 			} else if( avr_addrs[i] >= '0x0ac' && avr_addrs[i] <= '0x0bf' ) {
 				mode_name_val.mode_8+=(avr_datas[i]+', ');
+				
 			} else if( avr_addrs[i] == '0x005' ) {		// mode value
 				
 				// MODE INIT
@@ -7168,37 +7204,55 @@ function fun()
 			
 		}
 		
-		// mode name code modify
-		/*
-		console.log( 'mode_1 : ' + mode_name_val.mode_1);
-		console.log( 'mode_2 : ' + mode_name_val.mode_2);
-		console.log( 'mode_3 : ' + mode_name_val.mode_3);
-		console.log( 'mode_4 : ' + mode_name_val.mode_4);
-		console.log( 'mode_5 : ' + mode_name_val.mode_5);
-		console.log( 'mode_6 : ' + mode_name_val.mode_6);
-		console.log( 'mode_7 : ' + mode_name_val.mode_7);
-		console.log( 'mode_8 : ' + mode_name_val.mode_8);
-		*/
-		( function( mode_name_obj ) {
-			
-			for( var key in mode_name_obj ) {
-				var num;
-				var str='';
-				mode_name_obj[key] = mode_name_obj[key].split(',');
-				for( var i=0; i< 20; i++ ) {
-					num = parseInt(mode_name_obj[key][i], 10);
-					if( num == 0 ) {
-						str += String.fromCharCode(num);
-						break;
-					}	
-					str += String.fromCharCode(num);
-					
-				}
-				console.log('res string : '+ str);
-			}
-			
-		})( mode_name_val );
 		
+		if( program_init_flag == 0) {
+				
+			// mode name code modify
+			/*
+			console.log( 'mode_1 : ' + mode_name_val.mode_1);
+			console.log( 'mode_2 : ' + mode_name_val.mode_2);
+			console.log( 'mode_3 : ' + mode_name_val.mode_3);
+			console.log( 'mode_4 : ' + mode_name_val.mode_4);
+			console.log( 'mode_5 : ' + mode_name_val.mode_5);
+			console.log( 'mode_6 : ' + mode_name_val.mode_6);
+			console.log( 'mode_7 : ' + mode_name_val.mode_7);
+			console.log( 'mode_8 : ' + mode_name_val.mode_8);
+			*/
+			
+			( function( mode_name_obj ) {
+				var mode_idx=0;
+				var mode_name_protocol='';
+				
+				for( var key in mode_name_obj ) {
+					var num;
+					var str='';
+					mode_name_obj[key] = mode_name_obj[key].split(',');
+					for( var i=0; i< 20; i++ ) {
+						num = parseInt(mode_name_obj[key][i], 10);
+						if( num == 0 ) {
+							str += String.fromCharCode(num);
+							break;
+						}	
+						str += String.fromCharCode(num);
+						
+					}
+					// console.log('res string : '+ str);
+					mode_names[key] = str;
+					$("#mode_"+(mode_idx+1)).html(mode_names[key]);
+					mode_idx++;
+				}
+				
+				for(var key in mode_names) {
+					mode_name_protocol += (mode_names[key] + ':');
+				}
+				mode_name_protocol = mode_name_protocol.slice(0, -1);
+				console.log( 'mode_name_protocol : ' + mode_name_protocol); 
+				socket.emit('mode_name_save', mode_name_protocol);
+				
+			})( mode_name_val );
+			
+			program_init_flag = 1;
+		}
 		
 		// account_menu_init : Operator, modify: 0126
 		if( current_account == accounts.operator ) {
@@ -7216,8 +7270,9 @@ function fun()
 			
 			if ( validate_flag != true ) {
 				pass_match_process = pass_match_processes.validate_unlock;
-				if( $("#date").val().slice(6,10) != '1970' )
-				{
+				if( $("#date").val().slice(6,10) != '1970' ) {
+					$("#pass_input_dlg").dialog({ title: 'Program Password'});
+					$('#pass_input_lab').html('Validate Password : ');
 					$(pass_input_dlg).dialog("open");	
 				} 
 				disableElements();
@@ -7694,354 +7749,7 @@ function fun()
 		
 		return binary;
 	}
-	
-	// read_server_mem_request 	
-	function socket_emit_object(device_object, device_key, device_address, value, ID_device_value) {
-	
-		// //console.log('socket_emit_object func');
-		
-		// ID : Command :: data length ::: address+data ::::
-		socket.emit('read_server_mem_request', { DV_OBJ:device_object, DV_ADDR:device_address, VAL:value, 
-		ID:ID_device_value, KEY:device_key});
-	}
-	
-	// read_server_fix_mem_request 	
-	function socket_emit_fix_object(device_object, device_key, device_address, value, ID_device_value) {
-	
-		// //console.log('socket_emit_object func');
-		
-		// ID : Command :: data length ::: address+data ::::
-		socket.emit('read_server_fix_mem_request', { DV_OBJ:device_object, DV_ADDR:device_address, VAL:value, 
-		ID:ID_device_value, KEY:device_key});
-	}
-	
-	function init_html_fix_value() {
-		
-		// Eject, Feed value init
-		//console.log('eject value:'+Eject_Feed_onoff_val.EjectOnOff);
-		//console.log('feed value:'+Eject_Feed_onoff_val.FeedOnOff);
-		
-		$('#step-1st-img').show();
-		$('#step-2nd-img').hide();
-		$('#step-3rd-img').hide();
-		
-		if( program_init_flag == 0 ) {
 			
-			// Eject off
-			Eject_Feed_onoff_val.EjectOnOff = 0;				
-			$("#eject").css("background", "#6DCBB0");
-			$("#eject").html("EJECT OFF");
-			
-			Command = '4';
-			address =  Eject_Feed_onoff_addr.EjectOnOff;
-			value = '0';
-			socket_emit(ID, Command, address, value);
-			
-			// Feed off
-			Eject_Feed_onoff_val.FeedOnOff = 0;				
-			$("#feed").css("background", "#6DCBB0");						
-			$("#feed").html("FEED OFF");
-			Command = '4';	
-			address =  Eject_Feed_onoff_addr.FeedOnOff;	// Address store	
-			value = '0';  		// must be "toString()"
-			socket_emit(ID, Command, address, value);	
-			
-			socket.emit('program_init_check_res');
-		
-		} else {
-
-			if( Eject_Feed_onoff_val.EjectOnOff == 0 ) {
-				$("#eject").html("EJECT OFF").css("background", "#6DCBB0");
-			} else{
-				$("#eject").html("EJECT ON").css("background", "#D5FFE8");
-			}
-			
-			if( Eject_Feed_onoff_val.FeedOnOff == 0 ) {
-				$("#feed").html("FEED OFF").css("background", "#6DCBB0");
-			} else {
-				$("#feed").html("FEED ON").css("background", "#D5FFE8");
-			}
-		
-		}
-		
-		// Model value read
-		var nir_arr = [], stage_arr = [], channel_arr = [];
-		nir_arr = make_binary(model_val['nir']);
-		stage_arr = make_binary(model_val['stage']);
-		channel_arr = make_binary(model_val['channel']);
-		
-		// channel, stage, nir value init
-		model_val.channel = channel_arr[0]*1+channel_arr[1]*2+channel_arr[2]*4;
-		model_val.stage = stage_arr[3]*8;
-		model_val.nir = nir_arr[4]*16;
-		
-		// console.log(model_val.channel);
-		//console.log('make binary:'+ nir_arr);	
-		
-	
-		// var chute_size = $('#chute_list option').size();	
-		// $('#chute_list option:last').remove();
-	
-		// chute_list init
-		for( var i=0; i<=model_val.channel; i++ ) {
-			$('#chute_list').append('<option value='+(i+1)+'>'+(i+1)+'</option>');
-		}
-		$('#chute_list').selectmenu('refresh', true);
-		
-		// nir func init
-		if( model_val.nir == 16 ) {
-			$("#md-nir").html('INSTALLED');
-			$("#md-nir").val(16);
-		} else {
-			$("#md-nir").html('NONE');
-			$("#md-nir").val(0);
-		}
-		
-		// stage init
-		if( model_val.stage == 8 ) {
-			$("#md-stage").html('SINGLE');
-			$("#md-stage").val(8);
-		} else {
-			$("#md-stage").html('DOUBLE');
-			$("#md-stage").val(0);
-		}
-		
-		// channel init
-		for(var i=0; i<6; i++) {
-			if( i!=model_val.channel ) {
-				$("#channel-"+i).css('background', '#6DCBB0');
-			} else	$("#channel-"+i).css('background', '#D5FFE8');
-		}
-		
-		/*
-		for(var i=0; i<6; i++) {
-			if( i!=model_val.channel ) {
-				$("#check-channel input[id=channel-"+i+"]").prop("checked", false);
-			} else 	$("#check-channel input[id=channel-"+i+"]").prop("checked", true);
-		}
-		$("#check-channel").buttonset("refresh");
-		*/
-		
-		// Camera RGB A, B value init
-		var rgb_a_bin = make_binary(model_val.rgb_a);
-		var rgb_b_bin = make_binary(model_val.rgb_b);
-		/*
-		// Debug
-		//console.log('read rgb-a: '+model_val.rgb_a);
-		//console.log('read rgb-b: '+model_val.rgb_b);
-		//console.log('read rgb-a-bin: '+rgb_a_bin);
-		//console.log('read rgb-b-bin: '+rgb_b_bin);
-		*/
-		
-		for(var i=0; i<6; i++) {
-			$('#rgb-a-'+i).val(rgb_a_bin[i]);
-			$('#rgb-b-'+i).val(rgb_b_bin[i]);
-			
-			if( $('#rgb-a-'+i).val() == 0 ) {
-				$('#rgb-a-'+i).css('background', '#6DCBB0');
-			} else {
-				$('#rgb-a-'+i).css('background', '#D5FFE8');
-			}
-			
-			if( $('#rgb-b-'+i).val() == 0 ) {
-				$('#rgb-b-'+i).css('background', '#6DCBB0');
-			} else {
-				$('#rgb-b-'+i).css('background', '#D5FFE8');
-			}
-			
-		}
-		//console.log('Model value init done');
-		/*
-		//console.log('channel:'+model_val.channel);
-		//console.log('nir:'+model_val.nir);
-		//console.log('stage:'+model_val.stage);
-		*/
-		
-		rgb_addr = rgb_addr_A;
-		rgb_val = rgb_val_A;
-		
-		airgun_addr = airgun_addr_A;
-		airgun_val = airgun_val_A;			
-		
-		// html display init
-		$("#start_stop").html('STOP').css('background', '#6DCBB0');		// stop
-		$("#manual_auto").html("MANUAL").css('background', '#6DCBB0');	// manual
-		
-	}
-
-	// html => Node(server) File(value) Write	
-	function webValueToServerFile(){
-			
-		address = '0';
-		value   = '0';	// must be "toString()"
-		ID      = '01';
-		Command = 'A';	// setting file to AVR_M_memory in server
-		
-		// device_addr_1 
-		for(var key in device_addr_1) {
-			address = device_addr_1[key];	
-			value = device_val_1[key].toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('device_1 done');
-		
-		// device_addr_2
-		for(var key in device_addr_2) {
-			address = device_addr_2[key] ;	
-			value = device_val_2[key].toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		
-		//console.log('device_2 done');
-		
-		// device_addr_3
-		for(var key in device_addr_3) {
-			address = device_addr_3[key] ;	
-			value = device_val_3[key].toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('device_3 done');
-		
-		for(var key in adv_feed_addr) {
-			address = adv_feed_addr[key] ;	
-			value = adv_feed_val[key].toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('adv_feed done');
-		
-		/* BDS_RLC CamAddr(A1~B8) Init START */	
-		// transmit data: 0 ~ 200 (init.: 100)
-		// current data: -20 ~ +20 (init.: 0)
-		for(var key in B_D_S_CamAddr) {
-			address = B_D_S_CamAddr[key] ;	
-			value = ((B_D_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('B_D_S_CamVal done');
-		
-		for(var key in B_D_C_CamAddr) {
-			address = B_D_C_CamAddr[key] ;	
-			
-			value = ((B_D_C_CamVal[key]+20)*5).toString();
-					
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('B_D_C_CamVal done');
-		
-		for(var key in B_L_S_CamAddr) {
-			address = B_L_S_CamAddr[key] ;	
-			value = ((B_L_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('B_L_S_CamVal done');
-		
-		for(var key in B_L_C_CamAddr) {
-			address = B_L_C_CamAddr[key] ;	
-			value = ((B_L_C_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('B_L_C_CamVal done');
-		
-		for(var key in G_D_S_CamAddr) {
-			address = G_D_S_CamAddr[key] ;	
-			value = ((G_D_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('G_D_S_CamVal done');
-		
-		for(var key in G_D_C_CamAddr) {
-			address = G_D_C_CamAddr[key] ;	
-			value = ((G_D_C_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('G_D_C_CamVal done');
-		
-		for(var key in G_L_S_CamAddr) {
-			address = G_L_S_CamAddr[key] ;	
-			value = ((G_L_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('G_L_S_CamVal done');
-		
-		for(var key in G_L_C_CamAddr) {
-			address = G_L_C_CamAddr[key] ;	
-			value = ((G_L_C_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('G_L_C_CamVal done');
-		
-		for(var key in R_D_S_CamAddr) {
-			address = R_D_S_CamAddr[key] ;	
-			value = ((R_D_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('R_D_S_CamVal done');
-		
-		for(var key in R_D_C_CamAddr) {
-			address = R_D_C_CamAddr[key] ;	
-			value = ((R_D_C_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('R_D_C_CamVal done');
-		
-		for(var key in R_L_S_CamAddr) {
-			address = R_L_S_CamAddr[key] ;	
-			value = ((R_L_S_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('R_L_S_CamVal done');
-		
-		for(var key in R_L_C_CamAddr) {
-			address = R_L_C_CamAddr[key] ;	
-			value = ((R_L_C_CamVal[key]+20)*5).toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('R_L_C_CamVal done');
-		/* BDS_RLC CamAddr(A1~B8) Init END */
-		
-		// ejecting_addr: delay 1~3, hold 1~3
-		for(var key in ejecting_addr) {
-			address = ejecting_addr[key] ;	
-			value = ejecting_val[key].toString();
-			
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('ejecting_val done');
-		
-		for(var key in Eject_Feed_onoff_addr) {
-			device_object = "Eject_Feed_onoff_val";
-			address = Eject_Feed_onoff_addr[key];
-			value = Eject_Feed_onoff_val[key].toString();	
-			socket_emit(ID, Command, address, value);
-		}
-		//console.log('Eject and Feed On Off done');
-			
-	}
-	
-	// server_data_to_avr request
-	function ser_data_to_avr()
-	{ 
-		// protocol_HTML_server.Command 3 : server_data_to_avr request
-		protocol_HTML_server.Command = '3';
-		socket_emit( protocol_HTML_server.ID, protocol_HTML_server.Command, '0', '0');
-	
-	}	
-	
 	$("#target_mode").click( function() {
 		socket.emit('onboard_on');
 		$("#target_mode").focus();
@@ -8059,6 +7767,8 @@ function fun()
 	
 	$(".account_list_sub").click( function() {
 		
+		$(pass_input_dlg).dialog("close");
+		
 		pass_match_process = pass_match_processes.account;
 		account_id.select = this.id;
 		
@@ -8067,7 +7777,8 @@ function fun()
 			case 'admin':	current_account = accounts.admin;
 							if( account_id.past_id != 'admin' ) {
 								$(pass_input_dlg).dialog("open");	
-							}					
+							}
+							account_id.select = 'admin';
 							break;
 			
 			case 'engineer':	current_account = accounts.engineer;
@@ -8079,8 +7790,8 @@ function fun()
 									$("#account_menu_title").html( $("#engineer").html());
 									$( "#menu_3" ).menu( "option", "disabled", false );	// menu enable
 									document.getElementById("help").disabled=false;		// help btn enable
-									account_id.current = account_id.past_id = account_id.select = 'engineer';
-								
+									account_id.select = 'engineer';
+									
 								}
 								break;
 			
@@ -8091,6 +7802,8 @@ function fun()
 									pass_match_process = pass_match_processes.validate_unlock;
 									
 									if( $("#date").val().slice(6,10) != '1970' ) {
+										$("#pass_input_dlg").dialog({ title: 'Program Password'});
+										$('#pass_input_lab').html('Validate Password : ');
 										$(pass_input_dlg).dialog("open");
 									}
 									disableElements();
@@ -8915,7 +8628,7 @@ function fun()
 		self.close();	// browser exit
 	});
 	// Help Dialog event end ============
-		
+	
 	function ReadAVR_M_memory_image() { 
 		socket_emit(protocol_HTML_server.ID, protocol_HTML_server.Command, protocol_HTML_server.device_address, protocol_HTML_server.value);
 	}
@@ -8933,27 +8646,36 @@ function fun()
 
 	function Read_All_AVR_M_Data() {
 		
-		// Mode Name Read
-		for(var key in mode_name_addr) {
+		if( program_init_flag == 0) {
 			
-			var dec;
-			dec = parseInt(mode_name_addr[key], 16);
-			protocol_HTML_server.device_object = "mode_name_val";
-			for( var i=0; i<20; i++ ) {
-				mode_name_arr[i] = dec2hex(dec).toString();
+			console.log( 'program_init_flag is 0 : Avr Data Read' );
+			// Mode Name Read
+			for(var key in mode_name_addr) {
 				
-				// Object value(device address)	
-				protocol_HTML_server.device_address = '0x'+mode_name_arr[i];
-				protocol_HTML_server.device_key = key;	// Object Member	
-				protocol_HTML_server.value ='0';		// don't care.
-				protocol_HTML_server.Command = '2';
-				ReadAVR_M_memory_image();
-				
-				dec++;
+				var dec;
+				dec = parseInt(mode_name_addr[key], 16);
+				protocol_HTML_server.device_object = "mode_name_val";
+				for( var i=0; i<20; i++ ) {
+					mode_name_arr[i] = dec2hex(dec).toString();
+					
+					// Object value(device address)	
+					protocol_HTML_server.device_address = '0x'+mode_name_arr[i];
+					protocol_HTML_server.device_key = key;	// Object Member	
+					protocol_HTML_server.value ='0';		// don't care.
+					protocol_HTML_server.Command = '2';
+					ReadAVR_M_memory_image();
+					
+					dec++;
+				}
+				// console.log( 'addr : ' + mode_name_arr );
 			}
-			// console.log( 'addr : ' + mode_name_arr );
+			
+		} else {
+			
+			socket.emit('mode_name_read');
+			console.log( 'program_init_flag is 1 : Server Data Read' );
 		}
-				
+						
 		// Mode value read
 		for(var key in mode_addr) {
 		
