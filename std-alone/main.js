@@ -5224,7 +5224,7 @@ function fun()
 															var mode_name_protocol='';
 																							
 															$("#mode_menu_title").html(mode_name);
-															$("#target_mode").html(mode_name);
+															$("#target_mode").val(mode_name);
 															mode_names['mode_'+(parseInt(mode_val.mode)+1)] = mode_name;	// mode name store
 															$('#mode_'+(parseInt(mode_val.mode)+1)).html(mode_name);
 																									
@@ -7247,7 +7247,7 @@ function fun()
 					mode_name_protocol += (mode_names[key] + ':');
 				}
 				mode_name_protocol = mode_name_protocol.slice(0, -1);
-				console.log( 'mode_name_protocol : ' + mode_name_protocol); 
+				console.log( 'mode_name_protocol : ' + mode_name_protocol.toString()); 
 				socket.emit('mode_name_save', mode_name_protocol);
 				
 			})( mode_name_val );

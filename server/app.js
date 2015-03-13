@@ -226,15 +226,15 @@ function device_pass_init() {
 
 		pass_buf = data.toString().split(':');
 
-		console.log('line 209 pass_buf : ' + pass_buf);
+		// console.log('line 209 pass_buf : ' + pass_buf);
 
 		pass_val.master = pass_buf[1].toString();
 		pass_val.admin = pass_buf[3].toString();
 		pass_val.engineer = pass_buf[5].toString();
 
-		console.log('line 215 pass_val.master : ' + pass_val.master);
-		console.log('line 216 pass_val.admin : ' + pass_val.admin);
-		console.log('line 217 pass_val.engineer : ' + pass_val.engineer);
+		// console.log('pass_val.master : ' + pass_val.master);
+		// console.log('pass_val.admin : ' + pass_val.admin);
+		// console.log('pass_val.engineer : ' + pass_val.engineer);
 
 	});
 
@@ -862,7 +862,7 @@ function userData_save(user_data) {
 
 //HTML Mode name -> Server
 function mode_name_save(mode_name_text) {
-	var fd = fs.openSync(mode_name_file_path, 'rs+');	// File
+	var fd = fs.openSync(mode_name_file_path, 'w');	// File
 	var w_buf = new Buffer(mode_name_text.length);
 	w_buf.write(mode_name_text, 0, mode_name_text.length)
 	fs.writeSync(fd, w_buf, 0, w_buf.length, 0);		// writeSync
