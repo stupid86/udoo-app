@@ -1410,7 +1410,7 @@ function fun()
 		socket.emit('validate_read');	// validate read request web -> server
 		
 		setTimeout(Read_All_AVR_M_Data, 800);	// Read avr data
-		progressTimer = setInterval( progress, 80);	// progress Timer set
+		progressTimer = setInterval( progress, 90);	// progress Timer set
 		
 		// modify 0114
 		// err_check_timer init
@@ -1887,6 +1887,7 @@ function fun()
 	var err_video_flag = 0;
 	var err_airdlg_open_flag = 0;
 	var err_dlg_auto_close_flag = 0;
+	var err_code_str = 'FFFF';
 	
 	function all_err_dlg_close() {
 		for( var i=0; i<err_dlg_id.length; i++) {			
@@ -1897,7 +1898,7 @@ function fun()
 	}
 	
 	function dialog_open_check(dialog_id) {
-		if( $(dialog_id).dialog("isOpen") == true) {
+		if( $(dialog_id).dialog("isOpen") == true ) {
 			return 1;
 		} else return -1;
 	}
@@ -2257,7 +2258,7 @@ function fun()
 	socket.on('err_check_response', function(data) {
 					
 		// console.log('err_check_response: ' + data);
-		var err_code_str = data;
+		err_code_str = data;
 				
 		// clean_err_dlg, air_err_dlg, chute_err_dlg
 		switch(err_code_str) {
@@ -2314,8 +2315,10 @@ function fun()
 								err_dlg_auto_close_flag = 1;
 								all_err_dlg_close();
 								if( fix_flag != 1 && video_dlg_open_flag==1) {
-									if ( err_video_flag == 1 ) 
+									if ( err_video_flag == 1 ) {
 										component_send();
+										err_video_flag = 0;
+									}	
 								}
 								break;
 			
@@ -2644,6 +2647,7 @@ function fun()
 			$('#target_mode').val(mode_names["mode_"+(mode_val.mode+1)]);
 						
 			alert_flag_parent = alert_flag.mode;
+			
 		},
 		close: function( event, ui ) {
 			$('#mode_list').html('');
@@ -4017,7 +4021,7 @@ function fun()
 		
 		if( err_code_str == normal_code ) {
 			err_video_flag = 0;
-			if( fix_flag != 1 && video_dlg_open_flag==1) component_send();
+			if( fix_flag!=1 && video_dlg_open_flag==1 ) component_send();
 		} else {
 			err_video_flag = 1;
 		}
@@ -4661,6 +4665,8 @@ function fun()
 										switch( pass_match_process) {
 											case pass_match_processes.account:
 												current_account = accounts[account_id.past_id];
+												account_id.select = account_id.current;
+												break;
 										}
 										
 										$(pass_input_dlg).dialog("close");
@@ -5223,7 +5229,7 @@ function fun()
 															var mode_name_protocol='';
 																							
 															$("#mode_menu_title").html(mode_name);
-															$("#target_mode").html(mode_name);
+															$("#target_mode").val(mode_name);
 															mode_names['mode_'+(parseInt(mode_val.mode)+1)] = mode_name;	// mode name store
 															$('#mode_'+(parseInt(mode_val.mode)+1)).html(mode_name);
 																									
@@ -7246,7 +7252,7 @@ function fun()
 					mode_name_protocol += (mode_names[key] + ':');
 				}
 				mode_name_protocol = mode_name_protocol.slice(0, -1);
-				console.log( 'mode_name_protocol : ' + mode_name_protocol); 
+				console.log( 'mode_name_protocol : ' + mode_name_protocol.toString()); 
 				socket.emit('mode_name_save', mode_name_protocol);
 				
 			})( mode_name_val );
@@ -7790,7 +7796,7 @@ function fun()
 									$("#account_menu_title").html( $("#engineer").html());
 									$( "#menu_3" ).menu( "option", "disabled", false );	// menu enable
 									document.getElementById("help").disabled=false;		// help btn enable
-									account_id.select = 'engineer';
+ 									account_id.past_id = account_id.current = account_id.select = 'engineer';
 									
 								}
 								break;
