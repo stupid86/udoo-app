@@ -1900,6 +1900,9 @@ io.sockets.on('connection', function(socket) {
 		else if( html_protocol.COMMAND == '5') {	// err check command
 			tx_data = html_protocol.STX+':'+ html_protocol.ID + ':' + html_protocol.COMMAND +':'
 				+ html_protocol.LENGTH+ ':' + html_protocol.TEXT + ':' + html_protocol.RESULT_SUM_CHECK + ':' + '\0';
+		} else if( html_protocol.COMMAND == 'f' ) {
+			tx_data = html_protocol.STX+':'+ html_protocol.ID + ':' + html_protocol.COMMAND +':'
+				+ html_protocol.LENGTH+ ':' + html_protocol.TEXT + ':' + html_protocol.RESULT_SUM_CHECK + ':' + '\0';
 		}
 
 		tx_data_array.push(tx_data);
@@ -2096,6 +2099,14 @@ io.sockets.on('connection', function(socket) {
 			// output is in stdout
 			console.log('stdout: '+stdout);
 		});
+		
+		setTimeout(function(){
+			var store_cmd = 'sudo hwclock -w';
+			exec(store_cmd, function (error, stdout, stderr) {
+				// output is in stdout
+				console.log('stdout: '+stdout);
+			});
+		}, 3000);
 	});
 
 	socket.on('onboard_on', function() {
@@ -2237,17 +2248,20 @@ sp.on('data', function (data) {
 
 		client_parsing(rx_serial_data.toString());	// client data parsing
 
-		if(client_protocol.COMMAND == '2') {
+		if ( client_protocol.COMMAND == '2' ) {		// avr data read command
 
 			console.log('\r=========================================');
 			console.log('client_protocol.COMMAND == 2, data: ' + client_protocol.TEXT );
 			io.sockets.emit('read_avr_val_response', { value: client_protocol.TEXT });
 
-		} else if( client_protocol.COMMAND == '5' ) {
+		} else if ( client_protocol.COMMAND == '5' ) {	// error check command
 			console.log('\r\nclient_protocol.COMMAND == 5, Error Data: ' + client_protocol.TEXT +'\n');
 			io.sockets.emit('err_check_response', client_protocol.TEXT);
+		} else if ( client_protocol.COMMAND == 'f' ) {	// feed vibration value, feed state command
+			console.log('\r\nclient_protocol.COMMAND == f, Error Data: ' + client_protocol.TEXT +'\n');
+			io.sockets.emit('feed_value_condition', client_protocol.TEXT.toString());
 		}
-
+		
 		/*
 		if(client_protocol.COMMAND == 'D') {  //debug
 			console.log('=====================	==============================');

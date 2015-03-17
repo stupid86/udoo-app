@@ -96,7 +96,8 @@ const STX = 2;		// STX: AVR, Udoo, Html Const
 const ACK = '8';	
 const NACK = '9';
 var nack_addr, nack_value;
-var timer, auto_timer, auto_start_timer, shutdown_timer, mode_timer, timer_cnt=0;
+var timer, auto_timer, auto_start_timer, 
+	shutdown_timer, mode_timer, feed_condi_timer, timer_cnt=0;
 var err_check_timer;
 
 var mode_change_flag = 0;
@@ -1210,20 +1211,17 @@ function validate_check_program() {
 	console.log( 'date_vals.check_step:' + date_vals['stop_'+(date_vals.check_step+1)] );
 	*/
 	
-	if( current_year == '1970' ) {
+	if( current_year <= '1970' ) {
 		validate_flag = false;	// modify 0128
+		// console.log('break point 1');
 	} else {
+		validate_flag = true;	
 		for(var key in date_onoff_vals) {
 				
 			if( date_vals[key] == '-' ) {
-				
+
 				console.log("Not Setting");
-				if( current_year == '1970' ) {
-					valid_flag[key] = false;	// modify 0128
-					//valid_flag[key] = true;
-				} else {
-					valid_flag[key] = true;
-				}
+				valid_flag[key] = true;	
 				
 			} else if( date_onoff_vals[key] != 0 ) {
 				
@@ -1243,6 +1241,7 @@ function validate_check_program() {
 					if ( valid_month < current_month  ) {
 					
 						valid_flag[key] = false;
+						// console.log('break point 4');
 						// console.log('valid_month < current_month');
 					
 					} else if ( valid_month == current_month ) {
@@ -1251,6 +1250,7 @@ function validate_check_program() {
 							
 							// 'valid_day < current_day'
 							valid_flag[key] = false;
+							// console.log('break point 5');
 							// console.log('valid_day < current_day');
 						
 						} else if( valid_day > current_day ){
@@ -1275,11 +1275,12 @@ function validate_check_program() {
 				} else if( valid_year < current_year ) {
 					// valid_year < current_year
 					valid_flag[key] = false;
+					// console.log('break point 6');
 				} else if( valid_year > current_year ) {
 					
-					if( current_year == '1970' ) {
+					if( current_year <= '1970' ) {
 						valid_flag[key] = false;
-						//valid_flag[key] = true;
+						// console.log('break point 7');
 					} else {
 						valid_flag[key] = true;
 					}
@@ -1289,6 +1290,14 @@ function validate_check_program() {
 				}
 			}
 		}	// end of for
+	}
+	
+	for(var key in valid_flag) {
+		if( date_onoff_vals[key] != 0 ) {
+			if ( valid_flag[key] != true ) {
+				validate_flag = false;
+			}
+		}
 	}
 }
 
@@ -1329,15 +1338,7 @@ function fun()
 	$('.main_menu').on('mousedown', function() {
 		console.log('html body click');
 		console.log('current_account :'+current_account);
-		
-		for(var key in valid_flag) {
-			if( date_onoff_vals[key] != 0 ) {
-				if ( valid_flag[key] != true ) {
-					validate_flag = false;
-				}
-			}
-		}
-		
+				
 		if ( $("#date").val().slice(6,10) != '1970' ) {
 			
 			if ( validate_flag != true ) {
@@ -1648,7 +1649,16 @@ function fun()
 			socket_vd_emit(ID, cmd, addr, val);
 		}
 	}
-
+	
+	// feed vibration value, feed state command function
+	function feed_condition_check() {
+		var cmd = 'f';
+		var addr = '0x000';
+		var val = '0';	// must be toString()
+		socket_emit(ID, cmd, addr, val);
+		// console.log('feed_condition_check emit!');
+	}
+	
 	// cleaning on off function
 	function cleaning_maual_onoff( on_off_val ) {
 		
@@ -2253,6 +2263,14 @@ function fun()
 		},
 		closeOnEscape: false,
 		closeText: null
+	});
+	socket.on('feed_value_condition', function(data) {
+		console.log('feed_value_condition data : ' + data);
+		var feed_vibration_val = new Array(8);
+		var feed_condition_val = new Array(8);
+		feed_vibration_val[0] = parseInt(data, 10);
+		
+		$('#Adv_feed_vibrate_1').val(feed_vibration_val[0]);
 	});
 	
 	socket.on('err_check_response', function(data) {
@@ -2861,7 +2879,13 @@ function fun()
 			duration: 200
 		},
 		closeOnEscape: false,
-		closeText: null				
+		closeText: null,
+		open : function(event, ui) {
+			feed_condi_timer = setInterval( feed_condition_check, 1000 );
+		}, 
+		close:function(event, ui) {
+			clearInterval(feed_condi_timer);
+		}
 	});	
 	// Feed_Adv_Dlg Dialog END
 	
@@ -4782,14 +4806,6 @@ function fun()
 		}
 		
 		validate_check_program();
-		
-		for(var key in valid_flag) {
-			if( date_onoff_vals[key] != 0 ) {
-				if ( valid_flag[key] != true ) {
-					validate_flag = false;
-				}
-			}
-		}
 		
 		if ( validate_flag != true ) {
 			pass_match_process = pass_match_processes.validate_unlock;
@@ -7265,15 +7281,7 @@ function fun()
 			
 			document.getElementById("help").disabled=true;
 			$( "#menu_3" ).menu( "option", "disabled", true );	// menu disable			
-			
-			for(var key in valid_flag) {
-				if( date_onoff_vals[key] != 0 ) {
-					if ( valid_flag[key] != true ) {
-						validate_flag = false;
-					}
-				}
-			}
-			
+						
 			if ( validate_flag != true ) {
 				pass_match_process = pass_match_processes.validate_unlock;
 				if( $("#date").val().slice(6,10) != '1970' ) {
@@ -7804,13 +7812,15 @@ function fun()
 			case 'operator':	current_account = accounts.operator;
 								$("#account_menu_title").html( $("#operator").html());
 								
+								validate_check_program();
+								
 								if ( validate_flag != true ) {
 									pass_match_process = pass_match_processes.validate_unlock;
 									
 									if( $("#date").val().slice(6,10) != '1970' ) {
 										$("#pass_input_dlg").dialog({ title: 'Program Password'});
 										$('#pass_input_lab').html('Validate Password : ');
-										$(pass_input_dlg).dialog("open");
+										$(pass_input_dlg).dialog("open");	
 									}
 									disableElements();
 								} else {
@@ -7831,7 +7841,10 @@ function fun()
 	$(".mode_list_sub").click( function() {
 		select_mode_id = this.id;
 		alert_flag_parent = alert_flag.mode_change;
-		$( alert_dlg ).dialog( "open" );		// dialog close
+		console.log( select_mode_id+' : '+ mode_val.mode)
+		if( $('#'+select_mode_id).val() != mode_val.mode ) {
+			$( alert_dlg ).dialog( "open" );		// dialog close
+		}
 	});
 		
 	/* Model click event start */
