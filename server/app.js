@@ -103,17 +103,6 @@ open('http://localhost:3000', function (err) {
 });
 */
 
-/*
-function run_cmd(cmd, args, callBack ) {
-    var spawn = require('child_process').spawn;
-	// var child = spawn(cmd);
-	var child = spawn(cmd, args);
-    var resp = "";
-
-    child.stdout.on('data', function (buffer) { resp += buffer.toString() });
-    child.stdout.on('end', function() { callBack (resp) });
-}
-*/
 
 /**
  * Serial Port Setup.
@@ -136,7 +125,6 @@ var mem_file_path =  '/home/ubuntu/testWeb/udoo-rice/public/receiveData/AVR_M_me
 var fix_mem_file_path = '/home/ubuntu/testWeb/udoo-rice/public/receiveData/AVR_M_memory_Image.txt';
 var img_file_path = '/home/ubuntu/testWeb/udoo-rice/public/receiveData/image_test.txt';
 var pass_path = '/home/ubuntu/testWeb/udoo-rice/public/receiveData/.ps.txt';
-
 var log_path = '/home/ubuntu/testWeb/udoo-rice/public/receiveData/.exceptions.log';
 
 var winston = require('winston');
@@ -2090,23 +2078,19 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('date_and_time_config', function(data) {
-		/*
-		console.log('date config string : ' + data);
-		var text="date config";
-		run_cmd(data, [""], function(text) { console.log (text) });
-		*/
+		
+		console.log(data);
+		
 		exec(data, function (error, stdout, stderr) {
 			// output is in stdout
 			console.log('stdout: '+stdout);
-		});
-		
-		setTimeout(function(){
-			var store_cmd = 'sudo hwclock -w';
+			var store_cmd = 'sudo hwclock --systohc';
 			exec(store_cmd, function (error, stdout, stderr) {
 				// output is in stdout
 				console.log('stdout: '+stdout);
 			});
-		}, 3000);
+		});
+		
 	});
 
 	socket.on('onboard_on', function() {

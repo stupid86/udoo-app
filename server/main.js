@@ -2086,10 +2086,9 @@ function fun()
 			default: break;				
 		}
 		date_and_time_check(value_id);
-		date_time_str = 'sudo date -s \''+date_config_vals['year']+'-'+date_config_vals['month']
-						+'-'+date_config_vals['day']+' '+date_config_vals['hour']
-						+':'+date_config_vals['min']+':'+date_config_vals['sec']+'\'';
+				
 		$('#'+value_id+'_val').val(date_config_vals[value_id]);
+
 	}
 	
 	$('.date_bt').on('mouseup', function() {
@@ -2111,9 +2110,8 @@ function fun()
 	});
 	
 	$('.date_bt').on('click', function() {
-		clearInterval(timer);
-				
-		console.log( date_time_str );
+		clearInterval(timer);		
+		
 	});
 		
 	$('.date_val').on('click', function() {
@@ -2148,7 +2146,6 @@ function fun()
 	});
 	
 	var clean_err_dlg = $("#clean_err_dlg").dialog({
-		stack: false,
 		modal: true,
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -2176,8 +2173,6 @@ function fun()
 	});
 	
 	var air_err_dlg = $("#air_err_dlg").dialog({
-		stack: false,
-		//dialogClass: 'no-close',
 		modal: true,
 		autoOpen: false,
 		resizable: false,
@@ -2238,8 +2233,6 @@ function fun()
 	});
 	
 	var chute_err_dlg = $("#chute_err_dlg").dialog({
-		stack: false,
-		//dialogClass: 'no-close',
 		autoOpen: false,
 		resizable: false,		
 		modal: true,
@@ -2265,7 +2258,7 @@ function fun()
 		closeText: null
 	});
 	socket.on('feed_value_condition', function(data) {
-		console.log('feed_value_condition data : ' + data);
+		// console.log('feed_value_condition data : ' + data);
 		var feed_vibration_val = new Array(8);
 		var feed_condition_val = new Array(8);
 		feed_vibration_val[0] = parseInt(data, 10);
@@ -2365,7 +2358,6 @@ function fun()
 	
 	var progressTimer;
 	var progress_dlg = 	$( "#progress_dlg" ).dialog({
-		stack: false,
 		title: 'INIT PROGRAM..',
 		autoOpen: true,
 		resizable: false,	
@@ -2418,7 +2410,6 @@ function fun()
 	
 	// Validate_Dialog init ============================== 
 	var validate_dlg = $("#validate_dlg").dialog({
-		stack: false,
 		title: 'VALIDATE',
 		autoOpen: false,
 		resizable: false,		
@@ -2456,7 +2447,6 @@ function fun()
 	
 	// password input Dialog init ============================== 
 	var pass_input_dlg = $("#pass_input_dlg").dialog({
-		stack: true,
 		title: 'PASSWORD',
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -2516,7 +2506,6 @@ function fun()
 		
 	// User Name _Dialog init ============================== 
 	var user_dlg = $("#user_dlg").dialog({
-		stack: false,
 		title: 'User Name',
 		autoOpen: false,
 		resizable: false,		
@@ -2548,7 +2537,6 @@ function fun()
 	
 	// Alert_Dialog init ============================== 
 	var alert_dlg = $("#alert_dlg").dialog({
-		stack: false,
 		title: 'Alert',
 		autoOpen: false,
 		resizable: false,		
@@ -2577,7 +2565,6 @@ function fun()
 		
 	// Password_Dialog init ============================== 
 	var password_dlg = $("#password_dlg").dialog({
-		stack: false,
 		title: 'Password Change',
 		autoOpen: false,
 		resizable: false,		
@@ -2603,7 +2590,6 @@ function fun()
 	
 	// password change check dialog
 	var message_alert_dlg = $("#message_alert_dlg").dialog({
-		stack: false,
 		title: 'Alert',
 		// dialogClass: 'no-close',
 		autoOpen: false,
@@ -2631,7 +2617,6 @@ function fun()
 		
 	// mode_copy dialog init start ============
 	var mode_copy_dlg = $("#mode_copy_dlg").dialog({
-		stack: false,
 		title: 'MODE',
 		autoOpen: false,
 		resizable: false,		
@@ -2692,7 +2677,6 @@ function fun()
 			
 	// menu_dlg init ============================== 
 	var menu_dlg = $("#menu_dlg").dialog({
-		stack: false,
 		title: 'MENU',
 		autoOpen: false,
 		resizable: false,		
@@ -2718,7 +2702,6 @@ function fun()
 	
 	// start_dlg init ============================== 
 	var start_dlg = $("#start_dlg").dialog({
-		stack: false,
 		title: 'START',
 		autoOpen: false,
 		resizable: false,		
@@ -2744,7 +2727,6 @@ function fun()
 	
 	// Help_Dlg init ============================== 
 	var help_Dlg = $("#help_dlg").dialog({
-		stack: false,
 		title: 'HELP',
 		autoOpen: false,
 		resizable: false,		
@@ -2768,7 +2750,6 @@ function fun()
 	
     // Feed_Dlg init ============================== 
 	var Feed_Dlg = $("#Feed_Dlg").dialog({
-		stack: false,
 		//title: 'FEED',
 		autoOpen: false,
 		resizable: false,		
@@ -2793,7 +2774,6 @@ function fun()
 			
 	// Defect_Dlg init START==============================
 	var Defect_Dlg = $("#Defect_Dlg").dialog({
-		stack: false,
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -2816,7 +2796,6 @@ function fun()
 	
 	// Defect_Dlg init START==============================
 	var Defect_Pxl_Dlg = $("#Defect_Pxl_Dlg").dialog({
-		stack: false,
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -2839,7 +2818,6 @@ function fun()
 	
 	// RGB_Dlg init START==============================
 	var RGB_Dlg = $("#RGB_Dlg").dialog({
-		stack: false,
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -2862,7 +2840,6 @@ function fun()
 	
 	// Feed_Adv_Dlg Dialog START
 	var Feed_Adv_Dlg = $(".Feed_Adv_Dlg").dialog({
-		stack: false,
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -2881,7 +2858,7 @@ function fun()
 		closeOnEscape: false,
 		closeText: null,
 		open : function(event, ui) {
-			feed_condi_timer = setInterval( feed_condition_check, 1000 );
+			feed_condi_timer = setInterval( feed_condition_check, 300 );
 		}, 
 		close:function(event, ui) {
 			clearInterval(feed_condi_timer);
@@ -2891,7 +2868,6 @@ function fun()
 	
 	// Camera_Adv_Dlg Dialog START
 	var Camera_Adv_Dlg = $("#Camera_Adv_Dlg").dialog({
-		stack: false,
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -2914,7 +2890,6 @@ function fun()
 		
 	// Ejecting_Control_Dlg START
 	var Ejecting_Control_Dlg = $("#Ejecting_Control_Dlg").dialog({
-		stack: false,
 		title:'EJECTING',
 		autoOpen: false,
 		resizable: false,		
@@ -2939,7 +2914,6 @@ function fun()
 	
 	// Cleaning Dialog START	
 	var Cleaning_Dlg = $("#Cleaning_Dlg").dialog({
-		stack: false,
 		title:'CLEANING',
 		autoOpen: false,
 		resizable: false,		
@@ -2980,7 +2954,6 @@ function fun()
 	
 	// Camera_onoff Dialog START
 	var Camera_onoff_dlg = $("#Camera_Onoff_Dlg").dialog({
-		stack: false,
 		title:'CAMERA ON/OFF',
 		autoOpen: false,
 		resizable: false,		
@@ -3004,7 +2977,6 @@ function fun()
 	
 	// Shutdown Dialog START
 	var shutdown_dlg = $("#shutdown_dlg").dialog({
-		stack: false,
 		title:'SHUTDOWN',
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -3027,7 +2999,6 @@ function fun()
 	
 	// System off Dialog START	
 	var System_Dlg = $("#system_dlg").dialog({
-		stack: false,
 		title:'SYSTEM OFF',
 		autoOpen: false,
 		resizable: false,		
@@ -3063,7 +3034,6 @@ function fun()
 	
 	/* mode_init_dlg start */ 
 	var mode_init_dlg = $("#mode_init_dlg").dialog({
-		stack: false,
 		title:'MODE INIT..',
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -3088,7 +3058,6 @@ function fun()
 	
 	// Lighting Dialog START	
 	var Lighting_Dlg = $("#Lighting_Dlg").dialog({
-		stack: false,
 		title:'LIGHTING',
 		autoOpen: false,
 		resizable: false,		
@@ -3112,7 +3081,6 @@ function fun()
 		
 	// Model Dialog START	
 	var Model_Dlg = $("#Model_Dlg").dialog({
-		stack: false,
 		title:'MODEL',
 		autoOpen: false,
 		resizable: false,
@@ -3136,9 +3104,7 @@ function fun()
 	
 	// Airgun Dialog START	
 	var airgun_dlg = $("#airgun_dlg").dialog({
-		stack: false,
 		title: 'AIRGUN',
-		stack: false, 
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -3208,7 +3174,6 @@ function fun()
 	// Video Dialog START	
 	var video_dlg = $("#video_dlg").dialog({
 		title: 'VIDEO',
-		stack: false, 
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -3309,7 +3274,6 @@ function fun()
 	
 	/* fix timer dlg start */ 
 	var fix_timer_dlg = $("#fix_timer_dlg").dialog({
-		stack: false,
 		title:'FIX TIMER',
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -3334,7 +3298,6 @@ function fun()
 
 	// Alert_Dialog init ============================== 
 	var vd_alert_dlg = $("#vd_alert_dlg").dialog({
-		stack: false,
 		title: 'Alert',
 		dialogClass: 'no-close',
 		autoOpen: false,
@@ -3397,7 +3360,6 @@ function fun()
 	
 	// background_front_Dlg init == 
 	var bg_f_dlg = $("#dv_bg_f_dlg").dialog({
-		stack: false,
 		title: 'Background Front',
 		autoOpen: false,
 		resizable: false,		
@@ -3421,7 +3383,6 @@ function fun()
 	
 	// background_rear_Dlg init == 
 	var bg_r_dlg = $("#dv_bg_r_dlg").dialog({
-		stack: false,
 		title: 'Background Rear',
 		autoOpen: false,
 		resizable: false,		
@@ -4206,15 +4167,17 @@ function fun()
 	});
 	
 	$(".bg_f_arrow_button").mouseleave(function() {
+		console.log('mouseleave event');
 		clearInterval(timer);
 	});
 	
 	$(".bg_f_arrow_button").mouseup(function() {
+		console.log('mouseup event');
 		clearInterval(timer);		
 	});
 	
 	$(".bg_f_arrow_button").mousedown(function() {
-		
+		console.log('mousedown event');
 		img_recv_stop();
 		var click_id = this.id;
 		
@@ -4222,47 +4185,47 @@ function fun()
 			
 			// console.log('bgf mouse down'); 
 			switch(click_id) {
-			case 'bg_f_down': 
-					back_front_val.html_val-=1;
-					if(back_front_val.html_val <= 0) back_front_val.html_val=0;
-					
-					if(back_front_val.html_val<=255) {
-						back_front_val.bg_f_h = 0;
-						back_front_val.bg_f_l = back_front_val.html_val;
-					}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
-						// 255 < back_front_val.bg_f_l < 512
-						back_front_val.bg_f_h = 1;	// 0100000000b
-						back_front_val.bg_f_l = back_front_val.html_val-256;
-					}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
-						// 512 < back_front_val.bg_f_l < 768
-						back_front_val.bg_f_h = 2;	// 1000000000b	
-						back_front_val.bg_f_l = back_front_val.html_val-512;
-					}else {	// back_front_val.bg_f_l > 768
-						back_front_val.bg_f_h = 3;	// 1100000000b		
-						back_front_val.bg_f_l = back_front_val.html_val-768;
-					}
-				break;
-			
-			case 'bg_f_up': 
-					back_front_val.html_val+=1;
-					if(back_front_val.html_val >= 1023) back_front_val.html_val=1023;
-					
-					if(back_front_val.html_val<=255) {
-						back_front_val.bg_f_h = 0;
-						back_front_val.bg_f_l = back_front_val.html_val;
-					}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
-						// 255 < back_front_val.bg_f_l < 512
-						back_front_val.bg_f_h = 1;	// 0100000000b
-						back_front_val.bg_f_l = back_front_val.html_val-256;
-					}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
-						// 512 < back_front_val.bg_f_l < 768
-						back_front_val.bg_f_h = 2;	// 1000000000b	
-						back_front_val.bg_f_l = back_front_val.html_val-512;
-					}else {	// back_front_val.bg_f_l > 768
-						back_front_val.bg_f_h = 3;	// 1100000000b		
-						back_front_val.bg_f_l = back_front_val.html_val-768;
-					}
-					break;
+				case 'bg_f_down': 
+						back_front_val.html_val-=1;
+						if(back_front_val.html_val <= 0) back_front_val.html_val=0;
+						
+						if(back_front_val.html_val<=255) {
+							back_front_val.bg_f_h = 0;
+							back_front_val.bg_f_l = back_front_val.html_val;
+						}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
+							// 255 < back_front_val.bg_f_l < 512
+							back_front_val.bg_f_h = 1;	// 0100000000b
+							back_front_val.bg_f_l = back_front_val.html_val-256;
+						}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
+							// 512 < back_front_val.bg_f_l < 768
+							back_front_val.bg_f_h = 2;	// 1000000000b	
+							back_front_val.bg_f_l = back_front_val.html_val-512;
+						}else {	// back_front_val.bg_f_l > 768
+							back_front_val.bg_f_h = 3;	// 1100000000b		
+							back_front_val.bg_f_l = back_front_val.html_val-768;
+						}
+						break;
+				
+				case 'bg_f_up': 
+						back_front_val.html_val+=1;
+						if(back_front_val.html_val >= 1023) back_front_val.html_val=1023;
+						
+						if(back_front_val.html_val<=255) {
+							back_front_val.bg_f_h = 0;
+							back_front_val.bg_f_l = back_front_val.html_val;
+						}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
+							// 255 < back_front_val.bg_f_l < 512
+							back_front_val.bg_f_h = 1;	// 0100000000b
+							back_front_val.bg_f_l = back_front_val.html_val-256;
+						}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
+							// 512 < back_front_val.bg_f_l < 768
+							back_front_val.bg_f_h = 2;	// 1000000000b	
+							back_front_val.bg_f_l = back_front_val.html_val-512;
+						}else {	// back_front_val.bg_f_l > 768
+							back_front_val.bg_f_h = 3;	// 1100000000b		
+							back_front_val.bg_f_l = back_front_val.html_val-768;
+						}
+						break;
 					
 			}
 		
@@ -4277,7 +4240,7 @@ function fun()
 	
 	// back_front_val up and down
 	$(".bg_f_arrow_button").click(function() {
-		
+		console.log('click event');
 		img_recv_stop();
 		
 		var click_id = this.id;
@@ -4286,20 +4249,20 @@ function fun()
 		switch(click_id) {
 			case 'bg_f_down': 
 					back_front_val.html_val-=1;
-					if(back_front_val.html_val <= 0) back_front_val.html_val=0;
+					if (back_front_val.html_val <= 0) back_front_val.html_val=0;
 					
-					if(back_front_val.html_val<=255) {
+					if (back_front_val.html_val<=255) {
 						back_front_val.bg_f_h = 0;
 						back_front_val.bg_f_l = back_front_val.html_val;
-					}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
+					} else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
 						// 255 < back_front_val.bg_f_l < 512
 						back_front_val.bg_f_h = 1;	// 0100000000b
 						back_front_val.bg_f_l = back_front_val.html_val-256;
-					}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
+					} else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
 						// 512 < back_front_val.bg_f_l < 768
 						back_front_val.bg_f_h = 2;	// 1000000000b	
 						back_front_val.bg_f_l = back_front_val.html_val-512;
-					}else {	// back_front_val.bg_f_l > 768
+					} else {	// back_front_val.bg_f_l > 768
 						back_front_val.bg_f_h = 3;	// 1100000000b		
 						back_front_val.bg_f_l = back_front_val.html_val-768;
 					}
@@ -4307,20 +4270,20 @@ function fun()
 			
 			case 'bg_f_up': 
 				back_front_val.html_val+=1;
-				if(back_front_val.html_val >= 1023) back_front_val.html_val=1023;
+				if (back_front_val.html_val >= 1023) back_front_val.html_val=1023;
 				
-				if(back_front_val.html_val<=255) {
+				if (back_front_val.html_val<=255) {
 					back_front_val.bg_f_h = 0;
 					back_front_val.bg_f_l = back_front_val.html_val;
-				}else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
+				} else if(back_front_val.html_val>=256 && back_front_val.html_val<512){ 
 					// 255 < back_front_val.bg_f_l < 512
 					back_front_val.bg_f_h = 1;	// 0100000000b
 					back_front_val.bg_f_l = back_front_val.html_val-256;
-				}else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
+				} else if(back_front_val.html_val>=512 && back_front_val.html_val<768){	
 					// 512 < back_front_val.bg_f_l < 768
 					back_front_val.bg_f_h = 2;	// 1000000000b	
 					back_front_val.bg_f_l = back_front_val.html_val-512;
-				}else {	// back_front_val.bg_f_l > 768
+				} else {	// back_front_val.bg_f_l > 768
 					back_front_val.bg_f_h = 3;	// 1100000000b		
 					back_front_val.bg_f_l = back_front_val.html_val-768;
 				}
@@ -4344,7 +4307,10 @@ function fun()
 		value = back_front_val.bg_f_h.toString();
 		console.log('back_front_val high');
 		socket_vd_emit(ID, Command, address, value);
-				
+
+		console.log('back_front_val.bg_front value : '+back_front_addr.bg_f_l);		
+		console.log('back_front_val.bg_front value : '+back_front_addr.bg_f_h);
+
 		img_recv_start();		
 	});
 	
@@ -4482,7 +4448,7 @@ function fun()
 		address = back_rear_addr.bg_r_h;
 		value = back_rear_val.bg_r_h.toString();
 		socket_vd_emit(ID, Command, address, value);
-		
+
 		img_recv_start();
 		
 	});
@@ -4884,30 +4850,7 @@ function fun()
 		}
 				
 		validate_check_program();
-		/*
-		for(var key in valid_flag) {
-			if( date_onoff_vals[key] != 0 ) {
-				if ( valid_flag[key] != true ) {
-					validate_flag = false;
-				}
-			}
-		}
 		
-		if ( validate_flag != true ) {
-			pass_match_process = pass_match_processes.validate_unlock;
-			
-			// console.log(parseInt( $("#date").val().slice(6,10)));
-			if( $("#date").val().slice(6,10) != '1970' ) {
-				$("#pass_input_dlg").dialog({ title: 'Program Password'});
-				$('#pass_input_lab').html('Validate Password : ');
-				$(pass_input_dlg).dialog("open");	
-			} 
-			disableElements();
-			
-		} else {
-			enableElements();
-		}
-		*/
 	});
 				
 	$(".date_toggles").click(function() {
@@ -5366,6 +5309,18 @@ function fun()
 							switch(this.id) {
 
 								case 'yes':
+									
+									date_config_vals['year'] = parseInt( $('#year_val').val(), 10 );
+									date_config_vals['month'] = parseInt( $('#month_val').val(), 10 );
+									date_config_vals['day'] = parseInt( $('#day_val').val(), 10 );
+									date_config_vals['hour'] = parseInt( $('#hour_val').val(), 10 );
+									date_config_vals['min'] = parseInt( $('#min_val').val(), 10 );
+									date_config_vals['sec'] = parseInt( $('#sec_val').val(), 10 );
+									
+									date_time_str = 'sudo date -s \'' + date_config_vals['year']  +'-'+ date_config_vals['month'] 
+									+'-'+ date_config_vals['day'] +' '+ date_config_vals['hour'] +':'+ date_config_vals['min'] 
+									+':'+ date_config_vals['sec'] + '\'';
+
 									console.log('date_time_config_str : '+date_time_str);
 									socket.emit('date_and_time_config', date_time_str);
 									break;
