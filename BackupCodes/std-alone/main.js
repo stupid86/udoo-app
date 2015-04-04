@@ -50,7 +50,7 @@ var avr_addrs = new Array();
 var avr_datas = new Array();
 
 /* Validate objects */
-
+var valid_pass_wrong_flag = 0, valid_pass_input_count=0;
 var validate_flag = true;
 var valid_flag = 	{
 						stop_1: true, stop_2: true, stop_3: true, 
@@ -83,7 +83,8 @@ var pass_match_process;		// password check process
 
 var alert_flag = 	{ 
 						mode:0, pass_change:1, init:2, 
-						date_time:3, mode_change:4 
+						date_time:3, mode_change:4,
+						user_name:5
 					};
 var alert_flag_parent;	// alert dialog : flag store
 
@@ -118,6 +119,10 @@ var current_adv_rgb_address;
 // System on off addr, value
 var system_onoff_addr = '0x100';
 var system_onoff_val_off = 1;
+
+// Eject and Feed Push Flag
+var push_eject_flag = 0;
+var push_feed_flag = 0;
 
 // Eject and Feed on off address
 var Eject_Feed_onoff_addr = { EjectOnOff:'0x600', FeedOnOff:'0x201' };
@@ -968,11 +973,11 @@ var video_addr_B 	= 	{
 // form: data(1-bit): 0b(corr., default) / 1b(raw)
 var video_val_A 	= 	{
 							type:0, part:'a', component:0, gain:1, 
-							form:0, html_component: 0, fix:1
+							form:0, html_component: 1, fix:1
 						};
 var video_val_B 	= 	{
 							type:0, part:'b', component:0, gain:1,
-							form:0, html_component: 0, fix:1
+							form:0, html_component: 1, fix:1
 						};							
 						
 
@@ -1063,7 +1068,7 @@ var Dlg_id = 	[
 					'Ejecting_Control_Dlg', 'Cleaning_Dlg', 'Camera_Adv_Dlg', 
 					'Ejecting_Control_Dlg',	'system_dlg', 'Lighting_Dlg', 
 					'Camera_Onoff_Dlg', 'password_dlg', 'pass_input_dlg', 
-					'Model_Dlg', 'airgun_dlg', 'video_dlg'
+					'Model_Dlg', 'airgun_dlg', 'video_dlg', 'version_dlg'
 				];	
 var vd_Dlg_id = [ 'dv_bg_f_dlg', 'dv_bg_r_dlg' ];
 
@@ -1096,7 +1101,8 @@ function operator_enableElements() {
 	for(var key in ID_device_addr_1) {
 		document.getElementById(ID_device_addr_1[key].slice(1)).disabled=false;
 	}
-	$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode disable
+	
+	mode_menu_enable();
 	document.getElementById("eject").disabled=false;	
 	document.getElementById("feed").disabled=false;
 	
@@ -1114,7 +1120,7 @@ function enableElements() {
 	for(var key in ID_device_addr_1) {
 		document.getElementById(ID_device_addr_1[key].slice(1)).disabled=false;
 	}
-	$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode disable
+	mode_menu_enable();	// mode enable
 	document.getElementById("eject").disabled=false;	
 	document.getElementById("feed").disabled=false;
 	
@@ -1137,7 +1143,7 @@ function disableElements() {
 	document.getElementById("eject").disabled=true;	
 	document.getElementById("feed").disabled=true;	
 	
-	$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable	
+	mode_menu_disable();
 	$( "#menu_3" ).menu( "option", "disabled", true );
 	
 	document.getElementById("help").disabled=true;
@@ -1301,6 +1307,27 @@ function validate_check_program() {
 	}
 }
 
+function account_menu_disable() {
+	$(".account_list_top_menu").hide();
+	$("#account_list_input").show();
+}
+
+function account_menu_enable() {
+	$(".account_list_top_menu").show();
+	$("#account_list_input").hide();
+}
+
+function mode_menu_disable() {
+	$(".mode_list_top_menu").hide();
+	$("#mode_list_input").show();
+}
+
+function mode_menu_enable() {
+	$(".mode_list_top_menu").show();
+	$("#mode_list_input").hide();
+}
+
+
 $(document).ready( function() {
 		
 	/*
@@ -1312,9 +1339,14 @@ $(document).ready( function() {
 	*/
 	
 	// Not Drag
+	/*
 	document.oncontextmenu = function(){ return false; }
 	document.onselectstart = function(){ return false; }
 	document.ondragstart = function(){ return false; }
+	*/
+
+	$(document).bind("contextmenu",function(){return false;});
+	$(document).bind("mousedown",function(){return false;});
 	
 	fun();
 	
@@ -1323,6 +1355,14 @@ $(document).ready( function() {
 function fun()
 {		
 	
+	// account
+	document.getElementById("account_list_input").disabled=true;		
+	document.getElementById("mode_list_input").disabled=true;		
+	
+	// model channel button disabled
+	document.getElementById("channel-6").disabled=true;		
+	document.getElementById("channel-7").disabled=true;		
+		
 	startTime();	// Timer Function
 	
 	var socket;		// socket.io socket
@@ -1336,13 +1376,18 @@ function fun()
 	var modechange_state = modechange_states.cleaning_on;
 	
 	$('.main_menu').on('mousedown', function() {
+		/*
 		console.log('html body click');
 		console.log('current_account :'+current_account);
-				
+		console.log('account_id.current :'+account_id.current);
+		*/
+		validate_check_program();
+		
+		
 		if ( $("#date").val().slice(6,10) != '1970' ) {
 			
 			if ( validate_flag != true ) {
-				if ( current_account == accounts.operator ) {
+				if ( account_id.current == "operator" ) {
 					$("#pass_input_dlg").dialog({ title: 'Program Password'});
 					$('#pass_input_lab').html('Validate Password : ');
 					pass_match_process = pass_match_processes.validate_unlock;
@@ -1351,11 +1396,17 @@ function fun()
 				}
 			}
 			
+		} else {	// system time : year == 1970
+			if ( account_id.current == "operator" ) {
+				$("#alert_content").html('Please set your system time.');
+				$(message_alert_dlg).dialog("open");	
+			}
 		}
 		
 	});
 	
 	$(window).on('keyup', function(event){
+		
 		if(event.keyCode == '9'){
 			
 			// console.log('event.keyCode: ' + event.keyCode);
@@ -1366,34 +1417,8 @@ function fun()
 			console.log('event.keyCode: ' + event.keyCode);
 		}
 		
-		//$('#pass_input').val();
-		
-		/*
-		$("#pass_input").focus( function(){
-			$("#pass_input").attr('type','text');
-		});
-		$("#pass_input").blur( function(){
-			("#pass_input").attr('type','password');	
-		});
-		*/
-		/*
-		setTimeout( function() {
-			$("#pass_input").attr('type','password');	
-		}, 500);
-		*/
-		
 	});
-
-	/*
-	var focused = 0;
-	function getFocused(e){
-	var ida =  $(':focus').eq(0).prop('id');
-		if(ida=='detect' && focused==0){
-			focused = 1;
-			console.log(e);
-		}
-	}
-	*/
+	
 	
 	/* Server Connect ( Web => Node(server) ) */
 	socket = io.connect("http://localhost:3000");
@@ -1484,20 +1509,27 @@ function fun()
 			case pass_match_processes.account:	
 							
 					if ( data.flag == '1' ) {	// match ok
-													
+						
+						allOptions.removeClass('selected');
+						$(account_li_el).addClass('selected');						
+						
 						switch(account_id.select) {
 	
 							case 'admin':	
 								account_id.current = account_id.select;
 								
-								$("#account_menu_title").html( 'Admin' );
+								$(".account_list_top_menu").children('.init').html('Admin');
+								
+								//$("#account_menu_title").html( 'Admin' );
 								
 								enableElements();
 								break;
 							
 							case 'engineer':	
 								account_id.current = account_id.select;
-								$("#account_menu_title").html( $("#engineer").html());
+								
+								$(".account_list_top_menu").children('.init').html('Engineer');
+								// $("#account_menu_title").html( $("#engineer").html());
 								
 								$( "#menu_3" ).menu( "option", "disabled", false );	// menu enable
 								document.getElementById("help").disabled=false;		// help btn enable
@@ -1635,6 +1667,19 @@ function fun()
 		// debug // console.log(STX + ':' + ID + ':' + Command	+ ':' + data_length + ':' + address + ':' + value + ':');	
 	}
 	
+	function gui_backup_emit(ID, Command, address, value) {
+		
+		//console.log('gui_backup_emit func');
+		var data_length = address.length + value.length;
+		
+		// ID : Command :: data length ::: address+data ::::
+		socket.emit('data_backup', { message :STX + ':' + ID 
+			+ ':' + Command	+ ':' + data_length + ':' 
+			+ ( address + value ), mode: mode_val.mode
+		});
+		
+	}
+		
 	// Error Check Function 
 	function error_check_func() {
 	
@@ -1645,9 +1690,16 @@ function fun()
 		
 		if( video_dlg_open_flag != 1 ) {
 			socket_emit(ID, cmd, addr, val);
-		} else {
-			socket_vd_emit(ID, cmd, addr, val);
 		}
+	}
+	
+	function vd_error_check_func() {
+	
+		var cmd = '5';
+		var addr = '0x000';
+		var val = '0';	// must be toString()
+		
+		socket_vd_emit(ID, cmd, addr, val);
 	}
 	
 	// feed vibration value, feed state command function
@@ -1676,9 +1728,9 @@ function fun()
 	function mode_ena_disable_check() {		
 		// Eject, Feed enable disable
 		if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode enable	
+			mode_menu_enable();	// mode enable
 		} else {
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable	
+			mode_menu_disable();	// mode disable
 		}
 	
 	}
@@ -1730,34 +1782,6 @@ function fun()
 		socket_emit(ID, Command, address, value);
 		// gain value emit end
 		
-	}
-	
-	// modechange function: 
-	// cleaning on -> delay 5s -> cleaning off -> gain all_save
-	function modechange_func() {
-		
-		switch( modechange_state ) {
-												
-			case modechange_states.cleaning_off:	cleaning_maual_onoff(0); 
-													modechange_state = modechange_states.all_save;
-													$("#mode_init_clean_off").html("Cleaning Off : ").append(document.createTextNode( "OK!!" ));
-													break;
-			case modechange_states.all_save:	all_save_func();
-												modechange_state = modechange_states.cleaning_off;
-												
-												clearInterval(mode_timer);
-												$("#mode_init_dlg").dialog("close");
-												
-												$("#mode_init_clean_on").html("Cleaning On");
-												$("#mode_init_clean_off").html("Cleaning Off");
-
-												Read_All_AVR_M_Data();	// Read avr data
-												
-												
-												break;
-			default : 	//console.log('unknown state'); 
-						break;									
-		}
 	}
 	
 	function shutdown_func() {
@@ -1873,19 +1897,128 @@ function fun()
 	}).width(183).height(55).css("background", "#6DCBB0");
 	
 	$( "#menu_4" ).menu( "option", "position", { my: "left top+10", at: "left top+50" } );
-	
-	
-	$( "#account_list_top_menu" ).menu().width(345).height(44).css("background", "#6DCBB0");
-	$( "#account_list_top_menu" ).menu( "option", "position", { my: "left top", at: "left top+50" } );
-	$("#account_list_top_menu").mouseleave(function () {
-	   $("#account_list_top_menu").menu('collapseAll');
+		
+	var account_li_el;
+	var allOptions = $(".account_list_top_menu").children('dd:not(.init)');
+	var account_open_toggle = 0;
+	$("#operator").addClass('selected');	// account menu select init
+		
+	$(".account_list_top_menu").on("click", ".init", function() {
+		if ( account_open_toggle == 0 ) {
+			account_open_toggle = 1;
+			$(this).closest(".account_list_top_menu").children('dd:not(.init)').slideDown();
+		} else {
+			allOptions.slideUp();
+			account_open_toggle = 0;	
+		}
+		
+	});
+			
+	$(".account_list_top_menu").on("click", "dd:not(.init)", function() {
+		
+		account_li_el=this;	// select element store
+		allOptions.slideUp();
+		
+		$(pass_input_dlg).dialog("close");
+		
+		pass_match_process = pass_match_processes.account;
+		account_id.select = this.id;
+		
+		switch(this.id) {
+						
+			case 'admin':	current_account = accounts.admin;
+							if( account_id.past_id != 'admin' ) {
+								$(pass_input_dlg).dialog("open");	
+							}
+							account_id.select = 'admin';
+							break;
+			
+			case 'engineer':	current_account = accounts.engineer;
+								console.log('current_account = accounts.engineer');
+								if( account_id.past_id != 'admin' && account_id.past_id != 'engineer') {
+									$(pass_input_dlg).dialog("open");
+								} else {
+									
+									$(".account_list_top_menu").children('.init').html('Engineer');
+									$( "#menu_3" ).menu( "option", "disabled", false );	// menu enable
+									document.getElementById("help").disabled=false;		// help btn enable
+ 									account_id.select = 'engineer';
+									
+								}
+								break;
+			
+			case 'operator':	current_account = accounts.operator;
+								$(".account_list_top_menu").children('.init').html('Operator');
+								
+								allOptions.removeClass('selected');
+								$(account_li_el).addClass('selected');								
+								validate_check_program();
+								
+								if ( validate_flag != true ) {
+									pass_match_process = pass_match_processes.validate_unlock;
+									
+									if( $("#date").val().slice(6,10) != '1970' ) {
+										$("#pass_input_dlg").dialog({ title: 'Program Password'});
+										$('#pass_input_lab').html('Validate Password : ');
+										$(pass_input_dlg).dialog("open");	
+									}
+									disableElements();
+								} else {
+									enableElements();
+									$( "#menu_3" ).menu( "option", "disabled", true );	// menu disable
+									document.getElementById("help").disabled=true;	
+																		
+								}
+								
+								account_id.current = account_id.past_id = account_id.select = 'operator';
+								break;
+			
+			default: break;
+		}
+	});
+
+	var modeAllOptions = $(".mode_list_top_menu").children('li:not(.mode_init)');
+	var mode_dd_el;
+	var mode_open_toggle = 0;
+		
+	$(".mode_list_top_menu").on("click", ".mode_init", function() {
+		
+		if ( mode_open_toggle == 0 ) {
+			mode_open_toggle = 1;
+			$(this).closest(".mode_list_top_menu").children('li:not(.mode_init)').slideDown();
+		} else {
+			modeAllOptions.slideUp();
+			mode_open_toggle = 0;	
+		}
 	});
 	
-	$( "#mode_list_top_menu" ).menu().width(345).height(43).css("background", "#6DCBB0");
-	$( "#mode_list_top_menu" ).menu( "option", "position", { my: "left top", at: "left top+50" } );
-	$("#mode_list_top_menu").mouseleave(function () {
-	   $("#mode_list_top_menu").menu('collapseAll');
+	$(".mode_list_top_menu").on("click", "li:not(.mode_init)", function() {
+		
+		if ( mode_open_toggle == 0 ) {
+			mode_open_toggle = 1;
+		} else {
+			mode_open_toggle = 0;	
+		}
+		
+		mode_dd_el = this;
+		select_mode_id = this.id;
+		
+		/*
+		// Debug
+		console.log( 'select_mode_id : '+ select_mode_id + ' select_mode_id length: ' + select_mode_id.length);
+		console.log( 'mode number : '+ mode_val.mode);		
+		console.log( 'select mode value : ' + $('#'+select_mode_id).val() );
+		*/
+		
+		alert_flag_parent = alert_flag.mode_change;
+		
+		if( $('#'+select_mode_id).val() != mode_val.mode ) {
+			$( alert_dlg ).dialog( "open" );		// dialog close
+		}
+		
+		modeAllOptions.slideUp();
 	});
+	
 	// Error Check Variable Start ==
 	var err_code = 	{	
 						cleaning:'1000', air:'0100', 
@@ -1915,7 +2048,7 @@ function fun()
 	
 	var date_config_dlg = $("#date_config").dialog({
 		
-		//dialogClass: 'no-close',
+		dialogClass: 'no-close',
 		autoOpen: false,
 		resizable: false,		
 		modal: false,
@@ -1985,7 +2118,8 @@ function fun()
 	});
 	
 	$('#date').click(function() {
-		if( current_account != accounts.operator ) {
+		
+		if( account_id.current != "operator" ) {
 			
 			pass_match_process = pass_match_processes.date_time;
 			
@@ -2003,11 +2137,11 @@ function fun()
 				default : break;
 			}
 			
-			if( $(pass_input_dlg).dialog("isOpen") != true) {
+			if( $(date_config_dlg).dialog("isOpen") != true) {
 				$(pass_input_dlg).dialog('open');
-			}
+			}	
+		}
 			
-		}	
 	});
 	
 	function isleapYear(year) {
@@ -2129,6 +2263,8 @@ function fun()
 	});
 	
 	$('#dt_cancel').on('click', function() {
+		$( date_config_dlg ).dialog( "close" );
+		/*
 		$('#day_val').val(date_config_vals.past_day);
 		$('#month_val').val(date_config_vals.past_month);
 		$('#year_val').val(date_config_vals.past_year);
@@ -2143,7 +2279,19 @@ function fun()
 		date_config_vals.hour = date_config_vals.past_hour;
 		date_config_vals.min = date_config_vals.past_min;
 		date_config_vals.sec = date_config_vals.past_sec;
+		*/
 	});
+	
+	var fix_dialog_open_flag=false;
+	function fix_dialog_open_check() {
+		if ( $( fix_timer_dlg ).dialog( "isOpen" ) == true ) {
+			fix_dialog_open_flag=true;
+			return true;
+		} else {
+			fix_dialog_open_flag=false;
+			return false;
+		}
+	}
 	
 	var clean_err_dlg = $("#clean_err_dlg").dialog({
 		modal: true,
@@ -2163,10 +2311,15 @@ function fun()
 			duration: 200
 		},
 		open: function( event, ui ) {
-		
+			if ( fix_dialog_open_check() == true ) {
+				$( fix_timer_dlg ).dialog( "close" );
+			}
 		},
 		close: function( event, ui ) {
-		
+			if( fix_dialog_open_flag == true ) {
+				$( fix_timer_dlg ).dialog( "open" );
+				fix_dialog_open_flag=false;
+			}
 		},
 		closeOnEscape: false,
 		closeText: null
@@ -2190,40 +2343,21 @@ function fun()
 		},
 		open: function( event, ui ) {
 			err_airdlg_open_flag = 1;
+			if ( fix_dialog_open_check() == true ) {
+				$( fix_timer_dlg ).dialog( "close" );
+			}
 		},
 		close: function( event, ui ) {
 			
+			if( fix_dialog_open_flag == true ) {
+				$( fix_timer_dlg ).dialog( "open" );
+				fix_dialog_open_flag=false;
+			}
+			
 			// eject_on_off(0);	// eject off
 			if( err_dlg_auto_close_flag != 1 ) {
-				
-				Eject_Feed_onoff_val.EjectOnOff = 0;				
-				$("#eject").css("background", "#6DCBB0");
-				$("#eject").html("EJECT OFF");
-
-				Command = '4';
-				address =  Eject_Feed_onoff_addr.EjectOnOff;
-				value = Eject_Feed_onoff_val.EjectOnOff.toString();
-				socket_emit(ID, Command, address, value);
-				
-				Eject_Feed_onoff_val.FeedOnOff = 0;				
-				$("#feed").css("background", "#6DCBB0");
-				$("#feed").html("FEED OFF");
-				
-				Command = '4';				
-				address =  Eject_Feed_onoff_addr.FeedOnOff;	// Address store	
-				value = Eject_Feed_onoff_val.FeedOnOff.toString();  		// must be "toString()"
-				socket_emit(ID, Command, address, value);
-			
-				// eject value check
-				if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
-					// disable
-					$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable
-				} 
-				else if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
-					// enable
-					$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode disable
-				}
-				
+				push_eject_flag = 0;
+				push_feed_flag = 0;
 			}
 			
 			err_dlg_auto_close_flag = 0;
@@ -2235,7 +2369,7 @@ function fun()
 	var chute_err_dlg = $("#chute_err_dlg").dialog({
 		autoOpen: false,
 		resizable: false,		
-		modal: true,
+		modal: false,
 		draggable: false,
 		position : { my: "center top+60", at: "center top" },
 		width:1010,
@@ -2249,19 +2383,25 @@ function fun()
 			duration: 200
 		},
 		open: function( event, ui ) {
-		
+			if ( fix_dialog_open_check() == true ) {
+				$( fix_timer_dlg ).dialog( "close" );
+			}
 		},
 		close: function( event, ui ) {
-		
+			if( fix_dialog_open_flag == true ) {
+				$( fix_timer_dlg ).dialog( "open" );
+				fix_dialog_open_flag=false;
+			}
 		},
 		closeOnEscape: false,
 		closeText: null
 	});
 	socket.on('feed_value_condition', function(data) {
-		// console.log('feed_value_condition data : ' + data);
+		console.log('feed_value_condition data : ' + data);
 		var feed_vibration_val = new Array(8);
 		var feed_condition_val = new Array(8);
 		feed_vibration_val[0] = parseInt(data, 10);
+
 		
 		$('#Adv_feed_vibrate_1').val(feed_vibration_val[0]);
 	});
@@ -2306,7 +2446,7 @@ function fun()
 									}
 									console.log('err_airdlg_open_flag == 0');
 								}
-								else if( Eject_Feed_onoff_val.EjectOnOff == 1 || Eject_Feed_onoff_val.FeedOnOff == 1) {	// eject on
+								else if( push_eject_flag == 1 || push_feed_flag == 1) {	// eject on
 									// air low dialog open
 									if( dialog_open_check(air_err_dlg) != 1 ) {
 										all_err_dlg_close();
@@ -2316,7 +2456,7 @@ function fun()
 										$(air_err_dlg).dialog("open");
 										console.log('air_err_dlg open');
 									}
-									console.log('Eject_Feed_onoff_val.EjectOnOff == 1');
+									console.log(' push_eject_flag == 1 || push_feed_flag == 1 ');
 								} else {
 									console.log('err_airdlg else');
 								}
@@ -2325,12 +2465,15 @@ function fun()
 			case normal_code: 	// console.log('Normal State...');
 								err_dlg_auto_close_flag = 1;
 								all_err_dlg_close();
+								
+								/*
 								if( fix_flag != 1 && video_dlg_open_flag==1) {
 									if ( err_video_flag == 1 ) {
 										component_send();
 										err_video_flag = 0;
 									}	
 								}
+								*/
 								break;
 			
 			default: 	//err_code.chute
@@ -2373,6 +2516,7 @@ function fun()
 			effect: "none",
 			duration: 100
 		},
+		dialogClass: "no-close",
 		closeOnEscape: false,
 		closeText: null
 	});
@@ -2507,6 +2651,7 @@ function fun()
 	// User Name _Dialog init ============================== 
 	var user_dlg = $("#user_dlg").dialog({
 		title: 'User Name',
+		dialogClass: 'no-close',
 		autoOpen: false,
 		resizable: false,		
 		modal: true,
@@ -2542,9 +2687,10 @@ function fun()
 		resizable: false,		
 		modal: true,
 		draggable: false,
-		position : { my: "center-200 left", at: "center left" },
-		width:300,
-		height:240,
+		position : { my: "center center", at: "center center" },
+		// position : { my: "center-200 left", at: "center left" },
+		width:700,
+		height:310,
 		show: {
 			effect: "none",
 			duration: 200
@@ -2597,8 +2743,8 @@ function fun()
 		modal: true,
 		draggable: false,
 		position : { my: "center center", at: "center center" },
-		width:500,
-		height:250,
+		width:900,
+		height:310,
 		show: {
 			effect: "none",
 			duration: 200
@@ -2608,7 +2754,29 @@ function fun()
 			duration: 200
 		},
 		closeText: null,
-		closeOnEscape: false
+		closeOnEscape: false,
+		close: function(event, ui) {
+				switch(pass_match_process) {
+					case  pass_match_processes.validate_unlock:
+							validate_check_program();
+							
+							if ( validate_flag != true ) {
+								pass_match_process = pass_match_processes.validate_unlock;
+								
+								// console.log(parseInt( $("#date").val().slice(6,10)));
+								if( $("#date").val().slice(6,10) != '1970' ) {
+									$("#pass_input_dlg").dialog({ title: 'Program Password'});
+									$('#pass_input_lab').html('Validate Password : ');
+									$(pass_input_dlg).dialog("open");	
+								} 
+								disableElements();
+								
+							} else {
+								operator_enableElements();
+							}
+							break;
+				}
+			}
 	});
 	
 	$("#message_alert_btn").click( function() {
@@ -3162,14 +3330,39 @@ function fun()
 			// Mode enable disable
 			if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
 				// disable
-				$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable
+				mode_menu_disable();	// mode disable	
 			} else if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
 				// enable
-				$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode enable
+				mode_menu_enable();	// mode enable	
 			}
 		}
 	});
 	// Airgun Dialog END
+	
+	var version_dlg = $("#version_dlg").dialog({
+		title: 'VERSION',
+		autoOpen: false,
+		resizable: false,		
+		modal: false,
+		draggable: false,
+		position : { my: "center top+11", at: "center top" },
+		width: 1010,
+		height: 682,
+		show: {
+			effect: "none",
+			duration: 200
+		},
+		hide: {
+			effect: "none",
+			duration: 200
+		},
+		closeOnEscape: false,
+		closeText: null,
+		open: function( event, ui ) {},
+		close: function( event, ui ) {
+		
+		}
+	});
 	
 	// Video Dialog START	
 	var video_dlg = $("#video_dlg").dialog({
@@ -3193,18 +3386,25 @@ function fun()
 		closeText: null,
 		open: function( event, ui ) {
 			
+			clearInterval(err_check_timer);
+			
 			video_dlg_open_flag = 1;	// open
+			
+			vd_error_check_func();
 			
 			// component_list init start
 			$('#component_list').html('');
 			for ( var i=0; i<=model_val.channel; i++ ) {
 				$('#component_list').append('<option value='+(i+1)+'>'+(i+1)+'</option>');
 			}
+			$("#component_list option[value="+video_val.html_component+"]").prop("selected", true);
 			$('#component_list').selectmenu('refresh', true);
 			// component_list end
 			
-			// clearInterval(err_check_timer);
-				
+			
+			// $("#component_list option:eq(2)").attr("selected", "selected");
+			
+							
 			// form value init start =========== 
 			video_val.form = 0;
 			$("#form").html('Corr.');
@@ -3217,11 +3417,12 @@ function fun()
 			// form value init end =========== 
 				
 			// component value emit start =========== 
-			$("#component_list option[value=1]").prop("selected", true);
-			$('#component_list').selectmenu('refresh', true);
+						
 			
 			video_val.component = 1;
-			video_val.html_component = 1;
+			for(var i=0; i<(video_val.html_component-1); i++){
+				video_val.component*=2;
+			}
 			
 			Command = '4';
 			address = video_addr.component;
@@ -3233,6 +3434,8 @@ function fun()
 		close: function( event, ui ) {
 			
 			video_dlg_open_flag = 0;
+			
+			err_check_timer = setInterval( error_check_func, 1000);
 			
 			// form value init start
 			video_val.form = 0;
@@ -3722,11 +3925,11 @@ function fun()
 				// Mode enable disable
 				if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
 					// disable
-					$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable	
+					mode_menu_disable();	// mode disable	
 				} 
 				else if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
 					// enable
-					$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode enable	
+					mode_menu_enable();	// mode enable	
 				}	
 				
 				Command = '4';
@@ -4003,14 +4206,19 @@ function fun()
 		}
 		
 		image_recv_comp_flag = 1;
-		
+		if( fix_flag!=1 && video_dlg_open_flag==1 ) {
+			vd_error_check_func();
+			component_send();
+		}
+		/*
 		if( err_code_str == normal_code ) {
 			err_video_flag = 0;
 			if( fix_flag!=1 && video_dlg_open_flag==1 ) component_send();
 		} else {
 			err_video_flag = 1;
 		}
-			
+		*/
+		
 	});
 	
 	// Camera A, B choice, toggle
@@ -4057,7 +4265,7 @@ function fun()
 		el.disabled = false;
 							
 		img_recv_start();
-		video_val.html_component = 1;
+		// video_val.html_component = 1;
 		
 		$("#component_list option[value="+video_val.html_component+"]").prop("selected", true);
 		$('#component_list').selectmenu('refresh', true);
@@ -4474,14 +4682,16 @@ function fun()
 		}
 	});
 	
-	$(".airgun_sub").click( function() {
+	$(".maintain_sub").click( function() {
 		console.log(this.id);
 		switch(this.id) {
 		
 			case 'menu_airgun':	All_Dialog_Close();
 								$( "#airgun_dlg" ).dialog( "open" );
 								break;
-			
+			case 'menu_version': All_Dialog_Close();
+								$( "#version_dlg" ).dialog( "open" );
+								break;
 			default : break;
 		}
 	});
@@ -4734,6 +4944,8 @@ function fun()
 		console.log('valid_idx = ' + valid_idx);
 		
 		if( data.acknack == ACK	) {
+			$("#alert_content").html('Validate Password Confirm.');
+			$(message_alert_dlg).dialog("open");
 			
 			validate_flag = true;
 			
@@ -4768,24 +4980,9 @@ function fun()
 			}
 					
 		} else {
-
-		}
-		
-		validate_check_program();
-		
-		if ( validate_flag != true ) {
 			pass_match_process = pass_match_processes.validate_unlock;
-			
-			// console.log(parseInt( $("#date").val().slice(6,10)));
-			if( $("#date").val().slice(6,10) != '1970' ) {
-				$("#pass_input_dlg").dialog({ title: 'Program Password'});
-				$('#pass_input_lab').html('Validate Password : ');
-				$(pass_input_dlg).dialog("open");	
-			} 
-			disableElements();
-			
-		} else {
-			operator_enableElements();
+			$("#alert_content").html('Password do not match.');
+			$(message_alert_dlg).dialog("open");
 		}
 		
 	});
@@ -4940,15 +5137,11 @@ function fun()
 	
 	$(".user_bts").click(function() {
 		switch( this.id ) {
-			case 'user_rename':	
-								user.name = $("#user_name_input").val();
-								$("#username").val(user.name);
-								socket.emit("user_name_input" , { name:user.name });
+			case 'user_rename':	alert_flag_parent = alert_flag.user_name;
+								$( alert_dlg ).dialog( "open" );
 								break;
 			
-			case 'user_cancel':	user.name = user.past_name;
-								$("#user_name_input").val(user.name);
-								socket.emit("user_name_input" , { name:user.name });
+			case 'user_cancel':	$( user_dlg ).dialog( "close" );
 								break;
 			
 			default :	break;
@@ -5099,18 +5292,44 @@ function fun()
 		
 		switch( alert_flag_parent ) {
 			
+			case alert_flag.user_name:
+					switch(this.id) {
+					
+						case 'yes':
+							user.name = $("#user_name_input").val();
+							$("#username").val(user.name);
+							socket.emit("user_name_input" , { name:user.name });
+							break;
+							
+						case 'no':
+							
+							/*
+							user.name = user.past_name;
+							$("#user_name_input").val(user.name);
+							socket.emit("user_name_input" , { name:user.name });
+							*/
+							break;
+					}
+					break;
+					
 			case alert_flag.mode_change:
 				
 				switch(this.id) {
 					
 					case 'yes':
 						mode_val.mode = $('#'+select_mode_id).val();
-						$("#mode_menu_title").html( $('#'+select_mode_id).html());
+						$(".mode_list_top_menu").children('.mode_init').html($('#'+select_mode_id).html());
+						$("#mode_list_input").val($('#'+select_mode_id).html());
+						
+						modeAllOptions.removeClass('selected');
+						$(mode_dd_el).addClass('selected');
+						
 						if( mode_val.past_val != mode_val.mode ) {
 							
 							All_Dialog_Close();
 							//console.log(this.id);	// this.id Mode_1 ~ 8
-										
+							
+							
 							// mode value init
 							Command = '4';
 							address = mode_addr.mode;				// address store
@@ -5122,7 +5341,7 @@ function fun()
 							
 							step_init('step-1st');
 							setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
-										
+							$(clean_err_dlg).dialog("open");			
 						}
 						mode_val.past_val = mode_val.mode;
 						break;
@@ -5187,7 +5406,8 @@ function fun()
 															var mode_name = $("#target_mode").val();
 															var mode_name_protocol='';
 																							
-															$("#mode_menu_title").html(mode_name);
+															$(".mode_init").html(mode_name);
+															$("#mode_list_input").val(mode_name);
 															$("#target_mode").val(mode_name);
 															mode_names['mode_'+(parseInt(mode_val.mode)+1)] = mode_name;	// mode name store
 															$('#mode_'+(parseInt(mode_val.mode)+1)).html(mode_name);
@@ -5341,43 +5561,45 @@ function fun()
 		
 	// Eject on-off
 	$("#eject").click(function () {
-		
-		//console.log('eject value:'+Eject_Feed_onoff_val.EjectOnOff);
-		
-		if(Eject_Feed_onoff_val.EjectOnOff == 1) {		// case on
-			Eject_Feed_onoff_val.EjectOnOff = 0;
-			
-			$("#eject").css("background", "#6DCBB0");
-			$("#eject").html("EJECT OFF");
-			//console.log('eject off');
-		} else {	// case off
-			Eject_Feed_onoff_val.EjectOnOff = 1;
-			
-			$("#eject").css("background", "#D5FFE8");
-			$("#eject").html("EJECT ON");
-			//console.log('eject on');
-		}
-		
-		// Mode enable disable
-		if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
-			// disable
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable	
-		} 
-		else if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
-			// enable
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode enable	
-		}	
-		
-		address =  Eject_Feed_onoff_addr.EjectOnOff;
-		value = Eject_Feed_onoff_val.EjectOnOff.toString();  // must be "toString()"
-		Command = '4';	
-		
-		if( video_dlg_open_flag == 0 ) {	// video_dialog open
-			socket_emit(ID, Command, address, value);	
+		if ( err_code_str == err_code.air ) {
+			push_eject_flag = 1;
 		} else {
-			socket_vd_emit(ID, Command, address, value);
+			
+			//console.log('eject value:'+Eject_Feed_onoff_val.EjectOnOff);
+			push_eject_flag = 0;
+			
+			if(Eject_Feed_onoff_val.EjectOnOff == 1) {		// case on
+				Eject_Feed_onoff_val.EjectOnOff = 0;
+				
+				$("#eject").css("background", "#6DCBB0");
+				$("#eject").html("EJECT OFF");
+				//console.log('eject off');
+			} else {	// case off
+				Eject_Feed_onoff_val.EjectOnOff = 1;
+				
+				$("#eject").css("background", "#D5FFE8");
+				$("#eject").html("EJECT ON");
+				//console.log('eject on');
+			}
+			
+			// Mode enable disable
+			if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
+				mode_menu_disable();	// mode disable	
+			} 
+			else if ( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
+				mode_menu_enable();	// mode enable	
+			}	
+			
+			address =  Eject_Feed_onoff_addr.EjectOnOff;
+			value = Eject_Feed_onoff_val.EjectOnOff.toString();  // must be "toString()"
+			Command = '4';	
+			
+			if( video_dlg_open_flag == 0 ) {	// video_dialog open
+				socket_emit(ID, Command, address, value);	
+			} else {
+				socket_vd_emit(ID, Command, address, value);
+			}
 		}
-		
 		// main page acknack
 		//AckNack_Addr_Store( '#AckNack' );
 		//device_addr_AckNack = '#AckNack';
@@ -5386,39 +5608,42 @@ function fun()
 		
 	// Feed on-off
 	$("#feed").click(function () {
-		
-		//console.log('feed value:'+Eject_Feed_onoff_val.FeedOnOff);
-		
-		if( Eject_Feed_onoff_val.FeedOnOff == 1 ) {	// feed off
-			Eject_Feed_onoff_val.FeedOnOff = 0;
-			
-			$("#feed").css("background", "#6DCBB0");						
-			$("#feed").html("FEED OFF");
-			//console.log('feed off');
-		} else {					// feed on
-			Eject_Feed_onoff_val.FeedOnOff = 1;
-						
-			$("#feed").css("background", "#D5FFE8");
-			$("#feed").html("FEED ON");
-			//console.log('feed on');
-		}
-		
-		// Mode enable disable
-		if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", true );	// mode disable	
-		}
-		else if( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
-			$( "#mode_list_top_menu" ).menu( "option", "disabled", false );	// mode enable	
-		}	
-		
-		address =  Eject_Feed_onoff_addr.FeedOnOff;	// Address store	
-		value = Eject_Feed_onoff_val.FeedOnOff.toString();  // must be "toString()"
-		Command = '4';	
-		
-		if( video_dlg_open_flag == 0 ) {	// video_dialog open
-			socket_emit(ID, Command, address, value);	
+		if ( err_code_str == err_code.air ) {
+			push_feed_flag = 1;
 		} else {
-			socket_vd_emit(ID, Command, address, value);
+			//console.log('feed value:'+Eject_Feed_onoff_val.FeedOnOff);
+			push_feed_flag = 0;
+			if( Eject_Feed_onoff_val.FeedOnOff == 1 ) {	// feed off
+				Eject_Feed_onoff_val.FeedOnOff = 0;
+				
+				$("#feed").css("background", "#6DCBB0");						
+				$("#feed").html("FEED OFF");
+				//console.log('feed off');
+			} else {					// feed on
+				Eject_Feed_onoff_val.FeedOnOff = 1;
+							
+				$("#feed").css("background", "#D5FFE8");
+				$("#feed").html("FEED ON");
+				//console.log('feed on');
+			}
+			
+			// Mode enable disable
+			if( ( Eject_Feed_onoff_val.EjectOnOff == 1 ) || ( Eject_Feed_onoff_val.FeedOnOff == 1 ) ) {
+				mode_menu_disable();	// mode disable	
+			}
+			else if( ( Eject_Feed_onoff_val.EjectOnOff == 0 ) && ( Eject_Feed_onoff_val.FeedOnOff == 0 ) ){
+				mode_menu_enable();	// mode enable	
+			}	
+			
+			address =  Eject_Feed_onoff_addr.FeedOnOff;	// Address store	
+			value = Eject_Feed_onoff_val.FeedOnOff.toString();  // must be "toString()"
+			Command = '4';	
+			
+			if( video_dlg_open_flag == 0 ) {	// video_dialog open
+				socket_emit(ID, Command, address, value);	
+			} else {
+				socket_vd_emit(ID, Command, address, value);
+			}
 		}
 		
 		// main page acknack
@@ -5444,7 +5669,7 @@ function fun()
 								$('.defect_vals').css("color", step_color[0]);
 								$('.RGB_val').css("color", step_color[0]);
 								//$('#step-1st-img').attr("src", "");
-								$('#step-2nd-img');
+								$('#step-2nd-img').hide();
 								$('#step-3rd-img').hide();
 								break;
 			
@@ -6097,9 +6322,7 @@ function fun()
 	});
 	
 	$("#RGB_Dlg_Arrow_bt_left").mouseup(function() {
-		
 		clearInterval(timer);
-
 	});
 	
 	$("#RGB_Dlg_Arrow_bt_left").mouseleave(function() {
@@ -6110,7 +6333,7 @@ function fun()
 	
 		timer = setInterval(function(){ 
 			
-			device_val[current_rgb_dialog_state] = parseInt(device_val[current_rgb_dialog_state]) - 1;
+			device_val[current_rgb_dialog_state] = parseInt(device_val[current_rgb_dialog_state])-1;
 
 			if( device_val[current_rgb_dialog_state] <= $( "#RGB_Dlg_slider" ).slider("option", "min") )
 				device_val[current_rgb_dialog_state] = $( "#RGB_Dlg_slider" ).slider("option", "min");
@@ -6506,7 +6729,7 @@ function fun()
 	});
 	
 	
-	$(".Cleaning_cycle_bt").mouseup( function() {	
+	$(".Cleaning_cycle_bt").click( function() {	
 		
 		clearInterval(timer);
 		
@@ -6515,6 +6738,16 @@ function fun()
 		value = cleaning_val.Cycle.toString();	// must be toString()
 		socket_emit(ID, Command, address, value);	
 		
+		// main page acknack
+		//AckNack_Addr_Store( '#AckNack' );
+		//device_addr_AckNack = '#AckNack';
+		
+	});
+	
+	$(".Cleaning_cycle_bt").mouseup( function() {	
+		
+		clearInterval(timer);
+	
 		// main page acknack
 		//AckNack_Addr_Store( '#AckNack' );
 		//device_addr_AckNack = '#AckNack';
@@ -6689,7 +6922,7 @@ function fun()
 			
 			$("#light_val_"+device_val).val(lighting_val['light_val_'+device_val]);
 			
-		}, 70);		
+		}, 70);
 		
 		
 	});
@@ -7233,17 +7466,20 @@ function fun()
 		
 		// account_menu_init : Operator, modify: 0126
 		if( current_account == accounts.operator ) {
-			
+						
 			document.getElementById("help").disabled=true;
 			$( "#menu_3" ).menu( "option", "disabled", true );	// menu disable			
 						
 			if ( validate_flag != true ) {
 				pass_match_process = pass_match_processes.validate_unlock;
+				
+				// validate password input dialog open
 				if( $("#date").val().slice(6,10) != '1970' ) {
 					$("#pass_input_dlg").dialog({ title: 'Program Password'});
 					$('#pass_input_lab').html('Validate Password : ');
 					$(pass_input_dlg).dialog("open");	
-				} 
+				}
+				
 				disableElements();
 			}
 			
@@ -7265,7 +7501,8 @@ function fun()
 		
 		// Mode Value INIT
 		mode_val.past_val = mode_val.mode;
-		$("#mode_menu_title").html( $("#mode_"+(mode_val.mode+1)).html() );	
+		$("#mode_"+(parseInt(mode_val.mode, 10)+1)).addClass('selected');	// mode menu select init
+		$(".mode_init").html( $("#mode_"+(mode_val.mode+1)).html() );	
 		
 		// console.log( ' mode_names["mode_"+(mode_val.mode+1):'+ mode_names["mode_"+(mode_val.mode+1)]);
 		
@@ -7624,8 +7861,6 @@ function fun()
 			
 		}
 		
-		mode_ena_disable_check();
-		
 		// component_list init start
 		$('#component_list').html('');
 		for( var i=0; i<=model_val.channel; i++ ) {
@@ -7723,7 +7958,7 @@ function fun()
 		socket.emit('onboard_on');
 		$("#target_mode").focus();
 	});
-	
+		
 	$(".mode_bts").click( function() {
 		
 		console.log('this.id :'+this.id);
@@ -7733,75 +7968,17 @@ function fun()
 		
 	});
 	
-	
-	$(".account_list_sub").click( function() {
-		
-		$(pass_input_dlg).dialog("close");
-		
-		pass_match_process = pass_match_processes.account;
-		account_id.select = this.id;
+	$(".mode_gui_bts").click( function() {
 		
 		switch(this.id) {
-			
-			case 'admin':	current_account = accounts.admin;
-							if( account_id.past_id != 'admin' ) {
-								$(pass_input_dlg).dialog("open");	
-							}
-							account_id.select = 'admin';
-							break;
-			
-			case 'engineer':	current_account = accounts.engineer;
-								console.log('current_account = accounts.engineer');
-								if( account_id.past_id != 'admin' && account_id.past_id != 'engineer') {
-									$(pass_input_dlg).dialog("open");
-								} else {
-									
-									$("#account_menu_title").html( $("#engineer").html());
-									$( "#menu_3" ).menu( "option", "disabled", false );	// menu enable
-									document.getElementById("help").disabled=false;		// help btn enable
- 									account_id.past_id = account_id.current = account_id.select = 'engineer';
-									
-								}
+			case 'gui_backup':  console.log('gui_backup');
 								break;
-			
-			case 'operator':	current_account = accounts.operator;
-								$("#account_menu_title").html( $("#operator").html());
-								
-								validate_check_program();
-								
-								if ( validate_flag != true ) {
-									pass_match_process = pass_match_processes.validate_unlock;
-									
-									if( $("#date").val().slice(6,10) != '1970' ) {
-										$("#pass_input_dlg").dialog({ title: 'Program Password'});
-										$('#pass_input_lab').html('Validate Password : ');
-										$(pass_input_dlg).dialog("open");	
-									}
-									disableElements();
-								} else {
-									enableElements();
-									$( "#menu_3" ).menu( "option", "disabled", true );	// menu disable
-									document.getElementById("help").disabled=true;	
-																		
-								}
-								
-								account_id.current = account_id.past_id = account_id.select = 'operator';
-								break;
-			
-			default: break;
+			case 'gui_recovery': 	console.log('gui_recovery');
+									break;
 		}
-			
-	});
 		
-	$(".mode_list_sub").click( function() {
-		select_mode_id = this.id;
-		alert_flag_parent = alert_flag.mode_change;
-		console.log( select_mode_id+' : '+ mode_val.mode)
-		if( $('#'+select_mode_id).val() != mode_val.mode ) {
-			$( alert_dlg ).dialog( "open" );		// dialog close
-		}
 	});
-		
+	
 	/* Model click event start */
 	$(".channel_btn").click(function() {
 		
@@ -7822,14 +7999,14 @@ function fun()
 		$('#chute_list').selectmenu('refresh', true);
 		
 		
-		for(var i=0; i<6; i++) {
+		for(var i=0; i<8; i++) {
 			if( i!=model_val.channel ) {
 				$("#channel-"+i).css('background', '#6DCBB0');
 			} else	$("#channel-"+i).css('background', '#D5FFE8');
 		}
 		
 		// tx data
-		address = model_addr.channel;			// address store
+		address = model_addr.channel;	// address store
 		Command = '4';
 		value =  (model_val.nir+model_val.stage+model_val.channel).toString();  // must be "toString()"
 		socket_emit(ID, Command, address, value);
@@ -8557,6 +8734,17 @@ function fun()
 	});
 	// Airgun Dialog Event end
 	
+	var version_toggle = 0;
+	$("#version_btn").click(function(){
+		if( version_toggle == 0 ) {
+			$("#version_btn").val("FPGA");
+			version_toggle = 1;
+		} else {
+			$("#version_btn").val("MCU");
+			version_toggle = 0;
+		}
+	});
+	
 	// Help Dialog event start ============
 	socket.on('help_res', function(data) {		// help event response: server -> web
 		
@@ -8621,7 +8809,7 @@ function fun()
 	function Read_All_AVR_M_Data() {
 		
 		if( program_init_flag == 0) {
-			
+			// avr read data
 			console.log( 'program_init_flag is 0 : Avr Data Read' );
 			// Mode Name Read
 			for(var key in mode_name_addr) {
@@ -8645,7 +8833,7 @@ function fun()
 			}
 			
 		} else {
-			
+			// server read data
 			socket.emit('mode_name_read');
 			console.log( 'program_init_flag is 1 : Server Data Read' );
 		}
@@ -8825,7 +9013,7 @@ function fun()
 		}
 		
 		for(var key in R_D_C_CamAddr) {
-			protocol_HTML_server.device_object = "R_D_C_CamVal";			// Object Name
+			protocol_HTML_server.device_object = "R_D_C_CamVal";		// Object Name
 			protocol_HTML_server.device_address = R_D_C_CamAddr[key];	// Object value(device address)	
 			protocol_HTML_server.device_key = key;						// Object Member	
 			protocol_HTML_server.value ='0';		// don't care.

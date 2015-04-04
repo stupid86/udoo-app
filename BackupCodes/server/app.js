@@ -33,9 +33,8 @@ var sp = new SerialPort("/dev/ttymxc3", {
 	dataBits: 8,
 	parity: 'none',
 	stopBits: 1,
-	flowControl: false,
-	parser: serialport.parsers.raw
-
+	flowControl: false
+	// parser: serialport.parsers.raw
 });
 
 var app = express();
@@ -102,7 +101,6 @@ open('http://localhost:3000', function (err) {
   console.log('The user closed the browser');
 });
 */
-
 
 /**
  * Serial Port Setup.
@@ -349,8 +347,8 @@ function html_parsing(data){
 
 	data_buffer = data.message.split(':');
 
-	console.log('html_parsing func..');
-	console.log('data_buffer: '+data_buffer.toString());
+	// console.log('html_parsing func..');
+	// console.log('data_buffer: '+data_buffer.toString());
 
 
 	html_protocol.STX = data_buffer[0];		// STX
@@ -415,83 +413,6 @@ function make_check_sum(){
 
 }
 
-// avr data => server
-function client_parsing_test(data){
-
-	var buf = new Array(4);
-	var data_buffer = new Array(40);
-	var string =  new Array();
-	var i = 0, j = 0, crc = 0;
-	var length_str_len;
-	var colon = ':';
-
-	data_buffer = data.split(':');
-
-	console.log('avr_parsing func..');
-	console.log('data_buffer: '+data_buffer.toString());
-
-	client_protocol.STX = data_buffer[0];		// STX
-	// console.log('Avr STX=' + client_protocol.STX);
-
-	client_protocol.ID = data_buffer[1];		// ID
-	//console.log("Avr ID=" + client_protocol.ID );
-
-	client_protocol.COMMAND = data_buffer[2];	// COMMAND
-	//console.log("Avr COMMAND=" + client_protocol.COMMAND );
-
-	client_protocol.ACK_NACK = client_protocol.COMMAND;	// waitAck에서 AckNack 체크를 위해 저장.
-	console.log('client_protocol.ACK_NACK ='+client_protocol.ACK_NACK );
-	if ((client_protocol.ACK_NACK == ACK) || (client_protocol.ACK_NACK == NACK)) {
-		return 1;
-	}
-
-	string[i++] = client_protocol.STX.toString().charCodeAt(0);	// STX	'/2' 0x02
-	string[i++] = colon.toString().charCodeAt(0);
-	string[i++] = client_protocol.ID.toString().charCodeAt(0);	// NUM 	'1'	 0x31
-	string[i++] = colon.toString().charCodeAt(0);
-	string[i++] = client_protocol.COMMAND.toString().charCodeAt(0);	// COMMAND '6'	0x36
-	string[i++] = colon.toString().charCodeAt(0);
-
-	client_protocol.LENGTH = data_buffer[3];	// LENGTH
-	// console.log("Avr LENGTH=" + client_protocol.LENGTH );
-	console.log("LENGTH=" + client_protocol.LENGTH );
-	for(var j=0; j<client_protocol.LENGTH.length; j++ ) {
-		string[i++] = client_protocol.LENGTH.toString().charCodeAt(j);
-	}
-	string[i++] = colon.toString().charCodeAt(0);
-
-	client_protocol.TEXT = data_buffer[4];		// TEXT
-	console.log("Avr TEXT=" + client_protocol.TEXT );
-
-	for(var j=0; j<client_protocol.TEXT.length; j++ ) {
-		string[i++] = client_protocol.TEXT.toString().charCodeAt(j);
-	}
-	string[i++] = colon.toString().charCodeAt(0);
-
-	// CRC
-	for(var j = 0; j < i; j++) {
-		crc = crc^string[j];
-	}
-
-	/*
-	console.log("Avr check_sum=" +  client_protocol.SUM_CHECK );	// check sum value
-	console.log("Avr check_sum_result=" + client_protocol.RESULT_SUM_CHECK);	// check sum result value( check sum%10000 )
-
-	if ((parseInt(client_protocol.SUM_CHECK))%1000 == client_protocol.RESULT_SUM_CHECK%1000){
-	    client_protocol.ACK_NACK = ACK;
-		console.log('Check Sum ACK !!!!!!!!!!!!!!!');
-	} else {
-		client_protocol.ACK_NACK = NACK;
-		console.log('Check Sum NACK !!!!!!!!!!!!!!!');
-	}
-
-	if ( client_protocol.COMMAND == '5') {
-		client_protocol.FILE_NAME = client_protocol.TEXT.slice(0,6);
-	}
-	*/
-	return 1;
-
-}
 
 // avr data => server
 function client_parsing(data){
@@ -500,8 +421,8 @@ function client_parsing(data){
 
 	data_buffer = data.split(':');
 
-	console.log('avr_parsing func..');
-	console.log('data_buffer: '+data_buffer.toString());
+	//console.log('avr_parsing func..');
+	console.log('avr data_buffer: '+data_buffer.toString());
 
 	client_protocol.STX = data_buffer[0];		// STX
 	//console.log('Avr STX=' + client_protocol.STX);
@@ -516,19 +437,23 @@ function client_parsing(data){
 	client_protocol.SUM_CHECK +=client_protocol.COMMAND.charCodeAt(0);
 
 	client_protocol.ACK_NACK = client_protocol.COMMAND;	// waitAck에서 AckNack 체크를 위해 저장.
-	console.log('client_protocol.ACK_NACK ='+client_protocol.ACK_NACK );
+	console.log('client_protocol.ACK_NACK ='+client_protocol.ACK_NACK);
 	if ((client_protocol.ACK_NACK == ACK) || (client_protocol.ACK_NACK == NACK)) {
 		data_buffer = null;
 		delete data_buffer;
 		return 1;
+	} else {
+	
 	}
 
 	client_protocol.LENGTH = data_buffer[3];	// LENGTH
-	console.log("Avr LENGTH=" + client_protocol.LENGTH );
+	// DEBUG
+	// console.log("Avr LENGTH=" + client_protocol.LENGTH );
 	client_protocol.SUM_CHECK +=parseInt(client_protocol.LENGTH);
 
 	client_protocol.TEXT = data_buffer[4];		// TEXT
-	console.log("Avr TEXT=" + client_protocol.TEXT );
+	// DEBUG
+	// console.log("Avr TEXT=" + client_protocol.TEXT );
 
 	for ( var i=0; i <  client_protocol.LENGTH; i++) {
 		client_protocol.SUM_CHECK += client_protocol.TEXT.charCodeAt(i);
@@ -538,7 +463,7 @@ function client_parsing(data){
 	//console.log("Avr check_sum=" +  client_protocol.SUM_CHECK );	// check sum value
 	//console.log("Avr check_sum_result=" + client_protocol.RESULT_SUM_CHECK);	// check sum result value( check sum%10000 )
 
-	if ((parseInt(client_protocol.SUM_CHECK))%1000 == client_protocol.RESULT_SUM_CHECK%1000){
+	if ((parseInt(client_protocol.SUM_CHECK))%1000 == client_protocol.RESULT_SUM_CHECK%1000) {
 	    client_protocol.ACK_NACK = ACK;
 		console.log('Check Sum ACK !!!!!!!!!!!!!!!');
 	} else {
@@ -1385,7 +1310,7 @@ function validate_data_send(socket) {
 
 		var validate_ps = data.toString().split(',');
 
-		console.log('validate password :' + validate_ps.toString());
+		// console.log('validate password :' + validate_ps.toString());
 
 		var i=0;
 		for(var key in date_vals) {
@@ -1482,7 +1407,7 @@ io.sockets.on('connection', function(socket) {
 
 			var validate_ps = data.toString().split(',');
 
-			console.log('validate password data :' + validate_ps.toString());
+			// console.log('validate password data :' + validate_ps.toString());
 			var validate_idx = 0, validate_idx_cnt = 0;
 			var valid_ps_flag = false;
 
@@ -1619,7 +1544,7 @@ io.sockets.on('connection', function(socket) {
 
 	// password check event
 	socket.on('pass_val_check', function(data){
-		console.log('pass_val_check :'+ data.state+','+ data.val);
+		// console.log('pass_val_check :'+ data.state+','+ data.val);
 
 		switch( data.state ) {
 
@@ -1698,8 +1623,8 @@ io.sockets.on('connection', function(socket) {
 			default: break;
 		}
 
-		console.log('new password: '+pass_val.admin);
-		console.log('new state: '+ server_pass_protocol.state);
+		// console.log('new password: '+pass_val.admin);
+		// console.log('new state: '+ server_pass_protocol.state);
 
 		// password change value store
 		if( server_pass_protocol.ack_flag == '1' ) {
@@ -1744,7 +1669,7 @@ io.sockets.on('connection', function(socket) {
 			+ html_protocol.LENGTH+ ':' + html_protocol.TEXT + ':' + html_protocol.RESULT_SUM_CHECK + ':' + '\0';
 
 		tx_vd_data_array.push(tx_data);
-		//rx_serial_state = rx_serial_states.init;
+		
 		var vd_ack_wait_cnt=0;
 		var vd_tx_state_cnt=0;
 
@@ -1763,7 +1688,7 @@ io.sockets.on('connection', function(socket) {
 												vd_tx_state_cnt++;
 												tx_vd_state = tx_vd_states.tx_data;
 												console.log('rx_serial_state is not init');
-
+																								
 												if( vd_tx_state_cnt > 4000 ) {
 													vd_tx_state_cnt = 0;
 
@@ -1778,7 +1703,7 @@ io.sockets.on('connection', function(socket) {
 											} else {
 
 												tx_vd_state = tx_vd_states.ack_nack_check;
-												rx_serial_state = rx_serial_states.init;
+												// rx_serial_state = rx_serial_states.init;
 												sp.write(tx_vd_data_array[0] , function (err, bytesWritten) {
 													if( err ) throw err;
 													console.log('\nserial tx data:', tx_vd_data_array[0]);
@@ -1789,7 +1714,6 @@ io.sockets.on('connection', function(socket) {
 													console.log('tx_vd_data_addr : '+ tx_vd_data_addr);
 												});
 											}
-
 											break;
 
 					case tx_vd_states.ack_nack_check:
@@ -1828,7 +1752,12 @@ io.sockets.on('connection', function(socket) {
 		}, 1);
 
 	});
-
+	
+	socket.on('data_backup', function(data) {
+		html_parsing(data);
+		file_save(data.mode);
+	});
+	
 	socket.on('data_ev', function(data) {
 
 		console.log('\r\ndata_ev event(web=>node): ' + data.message);
@@ -1839,7 +1768,7 @@ io.sockets.on('connection', function(socket) {
 		var tx_state_cnt=0;
 
 		if( html_protocol.COMMAND == '1') {
-			console.log('mode value: '+data.mode);
+			console.log('mode value: ' + data.mode);
 			dev_mode_val = data.mode;
 			// file_save(data.mode);
 
@@ -2019,39 +1948,6 @@ io.sockets.on('connection', function(socket) {
 
 	});
 
-	socket.on('test_img', function(data) {
-
-		console.log(data);
-		/*
-		var read_buffer;
-
-		read_buffer = fs.readFileSync(img_file_path, 'utf8');
-		io.sockets.emit('image_receive', read_buffer.toString() );
-		delete read_buffer;
-		*/
-		/*
-		fs.readFile(img_file_path, function(err, buf) {
-			if(err) console.log(err);
-			console.log(typeof(buf));
-			console.log(buf);
-			//io.sockets.emit('bin', buf );
-		});
-		*/
-
-		/*
-		var buf = new ArrayBuffer(1024*3);
-		for(var i=0; i<buf.byteLength; i++)  {
-			buf[i] = 0xA4;
-		}
-		var uint8View = new Uint8Array(buf);
-		console.log(uint8View);
-		socket.emit('bin', uint8View);
-		delete buf;
-		delete uint8View;
-
-		*/
-	});
-
 	socket.on('help_req', function() {
 		var ip_addr_wired = 'Not connected.';
 		var ip_addr_wireless = 'Not connected.';
@@ -2185,7 +2081,6 @@ sp.on('data', function (data) {
 			if ( data.toString().charCodeAt(data.toString().length-1) == ETX ) {
 				console.log('rx_serial_states.init');
 				rx_serial_state = rx_serial_states.init;
-
 			} else {
 				rx_serial_state = rx_serial_states.data;
 			}
@@ -2212,24 +2107,14 @@ sp.on('data', function (data) {
 				rx_serial_data='';
 				img_recv_flag = 1;
 
-				/*
-				sp.flush( function (error) {
-					if (error) {
-						console.log('serial port error!!!');
-						throw err;
-					}
-				});
-				*/
+				
 			}
 			break;
 
 	}
 
 	if ( rx_serial_state == rx_serial_states.init ){
-
-		console.log('client_parsing');
-		//client_parsing(data+ '\0');	// client data parsing
-
+	
 		client_parsing(rx_serial_data.toString());	// client data parsing
 
 		if ( client_protocol.COMMAND == '2' ) {		// avr data read command
@@ -2245,13 +2130,6 @@ sp.on('data', function (data) {
 			console.log('\r\nclient_protocol.COMMAND == f, Error Data: ' + client_protocol.TEXT +'\n');
 			io.sockets.emit('feed_value_condition', client_protocol.TEXT.toString());
 		}
-		
-		/*
-		if(client_protocol.COMMAND == 'D') {  //debug
-			console.log('=====================	==============================');
-			console.log('client_protocol.COMMAND == D, data: ' + client_protocol.TEXT );
-		}
-		*/
 
 		// server -> HTML : ACK, NACK tx
 		if( client_protocol.ACK_NACK == ACK ) {
