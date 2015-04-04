@@ -1688,7 +1688,8 @@ io.sockets.on('connection', function(socket) {
 												vd_tx_state_cnt++;
 												tx_vd_state = tx_vd_states.tx_data;
 												console.log('rx_serial_state is not init');
-																								
+												
+												/*												
 												if( vd_tx_state_cnt > 4000 ) {
 													vd_tx_state_cnt = 0;
 
@@ -1699,11 +1700,13 @@ io.sockets.on('connection', function(socket) {
 													rx_serial_state = rx_serial_states.init;
 
 												}
-
+												*/
+												
 											} else {
 
 												tx_vd_state = tx_vd_states.ack_nack_check;
 												// rx_serial_state = rx_serial_states.init;
+												
 												sp.write(tx_vd_data_array[0] , function (err, bytesWritten) {
 													if( err ) throw err;
 													console.log('\nserial tx data:', tx_vd_data_array[0]);
@@ -1725,19 +1728,18 @@ io.sockets.on('connection', function(socket) {
 															tx_vd_data_array.splice(i,1);
 															tx_vd_state = tx_vd_states.tx_data;
 															tx_vd_data_addr = '';
-
 														} else if( client_protocol.ACK_NACK == NACK ) {
 															client_protocol.ACK_NACK = '0';
 															tx_vd_state = tx_vd_states.tx_data;
 														} else {
 															vd_ack_wait_cnt++;
+															
 															if( vd_ack_wait_cnt > 4000 ) {
 																vd_ack_wait_cnt=0;
 																rx_serial_state = rx_serial_states.init;
 																tx_vd_state = tx_vd_states.tx_data;
 															}
 														}
-
 														break;
 
 					default: break;
