@@ -10,7 +10,7 @@ function check_device(){
 			device_name = mobileKeyWords[word];
 			break;
 		 
-		}
+		} 
 	}
 	return device_name;
 }
@@ -130,9 +130,123 @@ var Eject_Feed_onoff_addr = { EjectOnOff:'0x600', FeedOnOff:'0x201' };
 // Eject and Feed on off value, default: off(0)
 var Eject_Feed_onoff_val = { EjectOnOff:0, FeedOnOff:0 };
 
-// Eject and Feed on off ID value 
-var ID_Eject_Feed_onoff_addr = { EjectOnOff:'#eject', FeedOnOff:'#feed' };
+// Eject and Feed n off ID value 
+var ID_Eject_Feed_onof_addr = { EjectOnOff:'#eject', FeedOnOff:'#feed' };
 
+// vrsion addr, value
+var version_gui = "3.1";
+var version_addr;
+var version_val;
+var version_addr_mcu = 	{
+							control:	'0x700', integrated: '0x701',
+							feeding_1:	'0x702', lighting_1: '0x703',
+							lighting_2:	'0x704', lighting_3: '0x705',
+							cam_rgb_a_1: '0x706', cam_rgb_a_2: '0x707',
+							cam_rgb_a_3: '0x708', cam_rgb_a_4: '0x709',
+							cam_rgb_a_5: '0x70A', cam_rgb_a_6: '0x70B',
+							cam_rgb_a_7: '0x70C', cam_rgb_a_8: '0x70D',
+							cam_rgb_b_1: '0x70E', cam_rgb_b_2: '0x70F',
+							cam_rgb_b_3: '0x710', cam_rgb_b_4: '0x711',
+							cam_rgb_b_5: '0x712', cam_rgb_b_6: '0x713',
+							cam_rgb_b_7: '0x714', cam_rgb_b_8: '0x715',
+							cam_nir_a_1: '0x716', cam_nir_a_2: '0x717',
+							cam_nir_a_3: '0x718', cam_nir_a_4: '0x719',
+							cam_nir_a_5: '0x71A', cam_nir_a_6: '0x71B',
+							cam_nir_a_7: '0x71C', cam_nir_a_8: '0x71D',
+							ejecting_a_1: '0x71E', ejecting_a_2: '0x71F',
+							ejecting_a_3: '0x720', ejecting_a_4: '0x721',
+							ejecting_a_5: '0x722', ejecting_a_6: '0x723',
+							ejecting_a_7: '0x724', ejecting_a_8: '0x725',
+							ejecting_b_1: '0x726', ejecting_b_2: '0x727',
+							ejecting_b_3: '0x728', ejecting_b_4: '0x729',
+							ejecting_b_5: '0x72A', ejecting_b_6: '0x72B',
+							ejecting_b_7: '0x72C', ejecting_b_8: '0x72D',
+							video_mux_1: '0x72E', video_mux_2: '0x72F',
+							video_mux_3: '0x730'
+						};
+var version_addr_fpga = {	
+							control:	'0x731', integrated:	'0x732',
+							feeding_1:	'0x733', lighting_1:	'0x734',
+							lighting_2:	'0x735', lighting_3:	'0x736',
+							cam_rgb_a_1: '0x737', cam_rgb_a_2: '0x738',
+							cam_rgb_a_3: '0x739', cam_rgb_a_4: '0x73A',
+							cam_rgb_a_5: '0x73B', cam_rgb_a_6: '0x73C',
+							cam_rgb_a_7: '0x73D', cam_rgb_a_8: '0x73E',
+							cam_rgb_b_1: '0x73F', cam_rgb_b_2: '0x740',
+							cam_rgb_b_3: '0x741', cam_rgb_b_4: '0x742',
+							cam_rgb_b_5: '0x743', cam_rgb_b_6: '0x744',
+							cam_rgb_b_7: '0x745', cam_rgb_b_8: '0x746',
+							cam_nir_a_1: '0x747', cam_nir_a_2: '0x748',
+							cam_nir_a_3: '0x749', cam_nir_a_4: '0x74A',
+							cam_nir_a_5: '0x74B', cam_nir_a_6: '0x74C',
+							cam_nir_a_7: '0x74D', cam_nir_a_8: '0x74E',
+							ejecting_a_1: '0x74F', ejecting_a_2: '0x750',
+							ejecting_a_3: '0x751', ejecting_a_4: '0x752',
+							ejecting_a_5: '0x753', ejecting_a_6: '0x754',
+							ejecting_a_7: '0x755', ejecting_a_8: '0x756',
+							ejecting_b_1: '0x757', ejecting_b_2: '0x758',
+							ejecting_b_3: '0x759', ejecting_b_4: '0x75A',
+							ejecting_b_5: '0x75B', ejecting_b_6: '0x75C',
+							ejecting_b_7: '0x75D', ejecting_b_8: '0x75E',
+							video_mux_1: '0x75F', video_mux_2: '0x760',
+							video_mux_3: '0x761'
+						};
+
+var version_val_mcu = 	{
+							control:	'3.0', integrated: '3.0',
+							feeding_1:	'3.0', lighting_1: '3.0',
+							lighting_2:	'3.0', lighting_3: '3.0',
+							cam_rgb_a_1: '3.0', cam_rgb_a_2: '3.0',
+							cam_rgb_a_3: '3.0', cam_rgb_a_4: '3.0',
+							cam_rgb_a_5: '3.0', cam_rgb_a_6: '3.0',
+							cam_rgb_a_7: '3.0', cam_rgb_a_8: '3.0',
+							cam_rgb_b_1: '3.0', cam_rgb_b_2: '3.0',
+							cam_rgb_b_3: '3.0', cam_rgb_b_4: '3.0',
+							cam_rgb_b_5: '3.0', cam_rgb_b_6: '3.0',
+							cam_rgb_b_7: '3.0', cam_rgb_b_8: '3.0',
+							cam_nir_a_1: '3.0', cam_nir_a_2: '3.0',
+							cam_nir_a_3: '3.0', cam_nir_a_4: '3.0',
+							cam_nir_a_5: '3.0', cam_nir_a_6: '3.0',
+							cam_nir_a_7: '3.0', cam_nir_a_8: '3.0',
+							ejecting_a_1: '3.0', ejecting_a_2: '3.0',
+							ejecting_a_3: '3.0', ejecting_a_4: '3.0',
+							ejecting_a_5: '3.0', ejecting_a_6: '3.0',
+							ejecting_a_7: '3.0', ejecting_a_8: '3.0',
+							ejecting_b_1: '3.0', ejecting_b_2: '3.0',
+							ejecting_b_3: '3.0', ejecting_b_4: '3.0',
+							ejecting_b_5: '3.0', ejecting_b_6: '3.0',
+							ejecting_b_7: '3.0', ejecting_b_8: '3.0',
+							video_mux_1: '3.0', video_mux_2: '3.0',
+							video_mux_3: '3.0'
+						};
+var version_val_fpga = 	{	
+							control:	'3.0', integrated:	'3.0',
+							feeding_1:	'3.0', lighting_1:	'3.0',
+							lighting_2:	'3.0', lighting_3:	'3.0',
+							cam_rgb_a_1: '3.0', cam_rgb_a_2: '3.0',
+							cam_rgb_a_3: '3.0', cam_rgb_a_4: '3.0',
+							cam_rgb_a_5: '3.0', cam_rgb_a_6: '3.0',
+							cam_rgb_a_7: '3.0', cam_rgb_a_8: '3.0',
+							cam_rgb_b_1: '3.0', cam_rgb_b_2: '3.0',
+							cam_rgb_b_3: '3.0', cam_rgb_b_4: '3.0',
+							cam_rgb_b_5: '3.0', cam_rgb_b_6: '3.0',
+							cam_rgb_b_7: '3.0', cam_rgb_b_8: '3.0',
+							cam_nir_a_1: '3.0', cam_nir_a_2: '3.0',
+							cam_nir_a_3: '3.0', cam_nir_a_4: '3.0',
+							cam_nir_a_5: '3.0', cam_nir_a_6: '3.0',
+							cam_nir_a_7: '3.0', cam_nir_a_8: '3.0',
+							ejecting_a_1: '3.0', ejecting_a_2: '3.0',
+							ejecting_a_3: '3.0', ejecting_a_4: '3.0',
+							ejecting_a_5: '3.0', ejecting_a_6: '3.0',
+							ejecting_a_7: '3.0', ejecting_a_8: '3.0',
+							ejecting_b_1: '3.0', ejecting_b_2: '3.0',
+							ejecting_b_3: '3.0', ejecting_b_4: '3.0',
+							ejecting_b_5: '3.0', ejecting_b_6: '3.0',
+							ejecting_b_7: '3.0', ejecting_b_8: '3.0',
+							video_mux_1: '3.0', video_mux_2: '3.0',
+							video_mux_3: '3.0'
+						};
+					
 // Mode Name Read obj : 0x020(count 20) ~ 0x0BF
 var mode_name_addr = 	{ 
 							mode_1:'0x020', mode_2:'0x034', mode_3:'0x048', 
@@ -1005,10 +1119,11 @@ var device_objects 	=	{
 							G_L_C_CamVal: G_L_C_CamVal,	R_D_S_CamVal: R_D_S_CamVal,
 							R_D_C_CamVal: R_D_C_CamVal,	R_L_S_CamVal: R_L_S_CamVal,
 							R_L_C_CamVal: R_L_C_CamVal,	Eject_Feed_onoff_val: Eject_Feed_onoff_val, 
-							ejecting_val: ejecting_val, cleaning_val:cleaning_val, lighting_val:lighting_val, 
-							camera_onoff_val:camera_onoff_val, model_val: model_val, 
-							back_front_val: back_front_val, back_rear_val: back_rear_val,
-							mode_name_val: mode_name_val
+							ejecting_val: ejecting_val, cleaning_val:cleaning_val, 
+							lighting_val:lighting_val, camera_onoff_val:camera_onoff_val, 
+							model_val: model_val, back_front_val: back_front_val, 
+							back_rear_val: back_rear_val, mode_name_val: mode_name_val, 
+							version_val_mcu: version_val_mcu, version_val_fpga: version_val_fpga
 						};
 var device_object_val;
 	
@@ -1399,7 +1514,7 @@ function fun()
 		} else {	// system time : year == 1970
 			if ( account_id.current == "operator" ) {
 				$("#alert_content").html('Please set your system time.');
-				$(message_alert_dlg).dialog("open");	
+				$(message_alert_dlg).dialog("open");
 			}
 		}
 		
@@ -1436,7 +1551,7 @@ function fun()
 		socket.emit('validate_read');	// validate read request web -> server
 		
 		setTimeout(Read_All_AVR_M_Data, 800);	// Read avr data
-		progressTimer = setInterval( progress, 90);	// progress Timer set
+		progressTimer = setInterval( progress, 110);	// progress Timer set
 		
 		// modify 0114
 		// err_check_timer init
@@ -2206,7 +2321,7 @@ function fun()
 		var value_id = val_id.slice(0,val_id.indexOf("_"));
 		var up_down_char = val_id.slice(-1);
 		console.log('value_id : '+value_id +', up_down_char : '+up_down_char); 
-		
+						
 		switch(up_down_char) {
 			
 			case 'u':
@@ -2259,6 +2374,7 @@ function fun()
 	
 	$('#dt_apply').on('click', function() {
 		alert_flag_parent = alert_flag.date_time;
+		
 		$( alert_dlg ).dialog( "open" );		// dialog close
 	});
 	
@@ -2396,6 +2512,7 @@ function fun()
 		closeOnEscape: false,
 		closeText: null
 	});
+	
 	socket.on('feed_value_condition', function(data) {
 		console.log('feed_value_condition data : ' + data);
 		var feed_vibration_val = new Array(8);
@@ -3358,7 +3475,12 @@ function fun()
 		},
 		closeOnEscape: false,
 		closeText: null,
-		open: function( event, ui ) {},
+		open: function( event, ui ) {
+			$("#gui_v").val(version_gui);
+			for( var key in version_val_mcu ) {
+				$('#'+key+"_v").val(version_val_mcu[key]);
+			}
+		},
 		close: function( event, ui ) {
 		
 		}
@@ -3824,6 +3946,9 @@ function fun()
 		
 		if (this.value == 0) {
 			
+			video_val_A.html_component = this.value;
+			video_val_B.html_component = this.value;
+						
 			video_val.html_component=this.value;
 			console.log('video_val.html_component value: ' + video_val.html_component);
 			/*
@@ -3834,6 +3959,9 @@ function fun()
 			*/
 			
 		} else {
+			
+			video_val_A.html_component = this.value;
+			video_val_B.html_component = this.value;
 			
 			video_val.html_component=this.value;
 			console.log('video_val.html_component value: ' + video_val.html_component);
@@ -5299,15 +5427,15 @@ function fun()
 							user.name = $("#user_name_input").val();
 							$("#username").val(user.name);
 							socket.emit("user_name_input" , { name:user.name });
+							$(user_dlg).dialog("close");
 							break;
 							
 						case 'no':
-							
-							/*
+														
 							user.name = user.past_name;
 							$("#user_name_input").val(user.name);
-							socket.emit("user_name_input" , { name:user.name });
-							*/
+							//socket.emit("user_name_input" , { name:user.name });
+							
 							break;
 					}
 					break;
@@ -5543,10 +5671,26 @@ function fun()
 
 									console.log('date_time_config_str : '+date_time_str);
 									socket.emit('date_and_time_config', date_time_str);
+									
+									$( date_config_dlg ).dialog( "close" );		// dialog close
 									break;
 								
 								case 'no': 
-								
+											$('#day_val').val(date_config_vals.past_day);
+											$('#month_val').val(date_config_vals.past_month);
+											$('#year_val').val(date_config_vals.past_year);
+											$('#hour_val').val(date_config_vals.past_hour);
+											$('#min_val').val(date_config_vals.past_min);
+											$('#sec_val').val(date_config_vals.past_sec);
+											
+											date_config_vals.year = date_config_vals.past_year;
+											date_config_vals.month = date_config_vals.past_month;
+											date_config_vals.day = date_config_vals.past_day;
+											
+											date_config_vals.hour = date_config_vals.past_hour;
+											date_config_vals.min = date_config_vals.past_min;
+											date_config_vals.sec = date_config_vals.past_sec;
+									
 									break;
 							}
 							
@@ -7064,17 +7208,17 @@ function fun()
 		avr_data.push(data.value);
 		
 		//if( '0x403' == data.value.slice(0,5) ) {
-		if( '0x10A' == data.value.slice(0,5) ) {
+		if( "0x10A" == data.value.slice(0,5) ) {
 			
 			// debug console
-			/*
+			
 			console.log('0x10A if syntax');
 			console.log('addr_read_cnt : ' + addr_read_cnt);
 			console.log('avr_data.length : ' + avr_data.length);
 			console.log('avr_addrs.length : ' + avr_addrs.length);
 			console.log('avr_datas.length : ' + avr_datas.length);
 			console.log('avr_data_read_complite');
-			*/
+			
 			
 			avr_data_to_init_html();	// htmi display init
 			
@@ -7410,10 +7554,26 @@ function fun()
 						//console.log(back_rear_addr[key]+':'+back_rear_val[key]);
 					}
 				}
+			} else if( avr_addrs[i] >= '0x700' && avr_addrs[i] <= '0x730' ) {
+				// console.log( avr_addrs[i] +':'+ avr_datas[i]);
+				for( var key in version_addr_mcu ) {
+					if ( version_addr_mcu[key] == avr_addrs[i] ) {
+						// console.log( avr_addrs[i] +':'+ avr_datas[i]);
+						version_val_mcu[key] =  parseInt(avr_datas[i], 10);
+					}
+				}
+			} else if( avr_addrs[i] >= '0x731' && avr_addrs[i] <= '0x761' ) {
+				// console.log( avr_addrs[i] +':'+ avr_datas[i]);
+				for( var key in version_addr_fpga ) {
+					
+					if ( version_addr_fpga[key] == avr_addrs[i] ) {
+						// console.log( avr_addrs[i] +':'+ avr_datas[i]);
+						version_val_fpga[key] =  parseInt(avr_datas[i], 10);
+					}
+				}
 			}
 			
 		}
-		
 		
 		if( program_init_flag == 0) {
 				
@@ -8732,17 +8892,30 @@ function fun()
 		// length = 0
 		marking_ch_num[rgb_val.html_chute].length=0;
 	});
-	// Airgun Dialog Event end
+	// Airgun Dialog Eventend
 	
 	var version_toggle = 0;
 	$("#version_btn").click(function(){
+		
 		if( version_toggle == 0 ) {
+			
 			$("#version_btn").val("FPGA");
 			version_toggle = 1;
+			
+			for( var key in version_val_fpga ) {
+				$('#'+key+"_v").va(version_val_fpga[key]);
+			}
+
 		} else {
+
 			$("#version_btn").val("MCU");
 			version_toggle = 0;
+
+			for( var key in version_val_mcu ) {
+				$('#'+key+"_v").val(version_val_mcu[key]);
+			}
 		}
+
 	});
 	
 	// Help Dialog event start ============
@@ -8811,6 +8984,7 @@ function fun()
 		if( program_init_flag == 0) {
 			// avr read data
 			console.log( 'program_init_flag is 0 : Avr Data Read' );
+			
 			// Mode Name Read
 			for(var key in mode_name_addr) {
 				
@@ -8829,33 +9003,62 @@ function fun()
 					
 					dec++;
 				}
-				// console.log( 'addr : ' + mode_name_arr );
+				// console.log 'addr : ' + mode_name_arr );
 			}
-			
+				
 		} else {
 			// server read data
 			socket.emit('mode_name_read');
 			console.log( 'program_init_flag is 1 : Server Data Read' );
 		}
-						
+		
+		/*
+		console.log('break point a');
+		
+		
+		// version value read
+		for(var key in version_addr_mcu) {
+			
+			protocol_HTML_server.device_object = "version_val_mcu";			// Object Name
+			protocol_HTML_server.device_address = version_addr_mcu[key];	// Object value(device address)	
+			protocol_HTML_server.device_key = key;							// Object Member	
+			protocol_HTML_server.value ='0';		// don't care.
+			protocol_HTML_server.Command = '2';
+
+			ReadAVR_M_memory_image();
+		}
+		console.log('break point b');
+		for(var key in version_addr_fpga) {
+			
+			protocol_HTML_server.device_object = "version_val_fpga";		// Object Name
+			protocol_HTML_server.device_address = version_addr_fpga[key];	// Object value(device address)	
+			protocol_HTML_server.device_key = key;							// Object Member	
+			protocol_HTML_server.value ='0';								// don't care.
+			protocol_HTML_server.Command = '2';
+
+			ReadAVR_M_memory_image();
+		}
+		*/
+		
 		// Mode value read
 		for(var key in mode_addr) {
 		
 			protocol_HTML_server.device_object = "mode_val";		// Object Name
 			protocol_HTML_server.device_address = mode_addr[key];	// Object value(device address)	
 			protocol_HTML_server.device_key = key;					// Object Member	
-			protocol_HTML_server.value ='0';		// don't care.
+			protocol_HTML_server.value ='0';						// don't care.
 			protocol_HTML_server.Command = '2';
 
 			ReadAVR_M_memory_image();
 		}
-				// Model value read
+		
+		// Model value read
 		for(var key in model_addr) {
 		
 			protocol_HTML_server.device_object = "model_val";		// Object Name
 			protocol_HTML_server.device_address = model_addr[key];	// Object value(device address)	
 			protocol_HTML_server.device_key = key;					// Object Member	
-			protocol_HTML_server.value ='0';		// don't care.
+			protocol_HTML_server.value ='0';						// don't care.
 			protocol_HTML_server.Command = '2';
 
 			ReadAVR_M_memory_image();
@@ -9106,8 +9309,7 @@ function fun()
 			protocol_HTML_server.Command = '2';
 
 			ReadAVR_M_memory_image();
-		}
 		
+		}
 	}
-	
 }

@@ -1776,12 +1776,17 @@ input.light_state{
 /* Camera on off dialog end */
 
 #md-cam-title-a {
-
+	position: absolute;
+	top: 20px;
+	left: -180px;
 	margin: 0px;
 	font-size: 25px;
 	font-weight: bold;
 }
 #md-cam-title-b {
+	position: absolute;
+	top: 20px;
+	left: -180px;
 	margin: 0px;
 	font-size: 25px;
 	font-weight: bold;

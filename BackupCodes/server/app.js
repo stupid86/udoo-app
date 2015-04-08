@@ -2050,7 +2050,6 @@ sp.on('open', function () {
 // command 5,Ack,Nack, A
 // rx_client_states = client_parsing
 
-
 // Image Test variable
 var img_write_flag = 0;
 var img_fd;
