@@ -28,13 +28,14 @@ var accounts = 	{
 var account_id = 	{ 
 						current:'operator', past_id:'operator', select: 'operator'
 					};
+					
 var current_account = accounts.operator;	// init operator, modify: 0126
 var pass_init_id;
+
 /*
 var current_account = accounts.admin;	// init admin, modify: 0126
 account_id.past_id = 'admin';
 */
-
 var once_eject_flag = 0;
 var once_feed_flag = 0;
 var addr_read_cnt = 0;
@@ -56,6 +57,7 @@ var valid_flag = 	{
 						stop_1: true, stop_2: true, stop_3: true, 
 						stop_4: true, stop_5: true, stop_6: true	
 					};
+					
 var date_vals = { 
 					stop_1: '-', stop_2: '-', stop_3: '-', 
 					stop_4: '-', stop_5: '-', stop_6: '-',
@@ -134,7 +136,8 @@ var Eject_Feed_onoff_val = { EjectOnOff:0, FeedOnOff:0 };
 var ID_Eject_Feed_onof_addr = { EjectOnOff:'#eject', FeedOnOff:'#feed' };
 
 // vrsion addr, value
-var version_gui = "3.1";
+var version_toggle = 0;
+var version_gui = "3.0";
 var version_addr;
 var version_val;
 var version_addr_mcu = 	{
@@ -3476,10 +3479,19 @@ function fun()
 		closeOnEscape: false,
 		closeText: null,
 		open: function( event, ui ) {
+			
 			$("#gui_v").val(version_gui);
-			for( var key in version_val_mcu ) {
-				$('#'+key+"_v").val(version_val_mcu[key]);
+			
+			if( version_toggle == 0 ) {
+				for( var key in version_val_mcu ) {
+					$('#'+key+"_v").val(version_val_mcu[key]);
+				}
+			} else {
+				for( var key in version_val_fpga ) {
+					$('#'+key+"_v").va(version_val_fpga[key]);
+				}
 			}
+			
 		},
 		close: function( event, ui ) {
 		
@@ -5465,11 +5477,11 @@ function fun()
 							mode_val.past_val = mode_val.mode;
 							socket_emit(ID, Command, address, value);
 							
-							error_check_func();
+							// error_check_func();
 							
 							step_init('step-1st');
 							setTimeout(Read_All_AVR_M_Data, 5000);	// Read avr data
-							$(clean_err_dlg).dialog("open");			
+										
 						}
 						mode_val.past_val = mode_val.mode;
 						break;
@@ -8894,7 +8906,6 @@ function fun()
 	});
 	// Airgun Dialog Eventend
 	
-	var version_toggle = 0;
 	$("#version_btn").click(function(){
 		
 		if( version_toggle == 0 ) {
@@ -8978,7 +8989,7 @@ function fun()
 		}
 		return result;
 	}
-
+	
 	function Read_All_AVR_M_Data() {
 		
 		if( program_init_flag == 0) {
@@ -9012,10 +9023,6 @@ function fun()
 			console.log( 'program_init_flag is 1 : Server Data Read' );
 		}
 		
-		/*
-		console.log('break point a');
-		
-		
 		// version value read
 		for(var key in version_addr_mcu) {
 			
@@ -9027,7 +9034,7 @@ function fun()
 
 			ReadAVR_M_memory_image();
 		}
-		console.log('break point b');
+		
 		for(var key in version_addr_fpga) {
 			
 			protocol_HTML_server.device_object = "version_val_fpga";		// Object Name
@@ -9038,7 +9045,6 @@ function fun()
 
 			ReadAVR_M_memory_image();
 		}
-		*/
 		
 		// Mode value read
 		for(var key in mode_addr) {
@@ -9269,10 +9275,10 @@ function fun()
 		
 		// lighting values read
 		for(var key in lighting_addr) {
-			protocol_HTML_server.device_object = "lighting_val";			// Object Name
+			protocol_HTML_server.device_object = "lighting_val";		// Object Name
 			protocol_HTML_server.device_address = lighting_addr[key];	// Object value(device address)	
 			protocol_HTML_server.device_key = key;						// Object Member	
-			protocol_HTML_server.value ='0';		// don't care.
+			protocol_HTML_server.value ='0';							// don't care.
 			protocol_HTML_server.Command = '2';
 
 			ReadAVR_M_memory_image();
