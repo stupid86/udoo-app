@@ -55,4 +55,4 @@ echo "======== Std Alone Codes Backup End"
 
 echo "\nUI App Code Backup Complete\n\n"
 echo "Thank you."
-sleep 4
+sleep 3
