@@ -1,0 +1,1402 @@
+
+/* 
+2016-10-26
+*/
+
+body {
+	
+	/* padding: 50px; */
+	font: 14px;
+	
+	/* font-family: Consolas,monaco,monospace !important; */
+	/* font-family: gulim, monospace !important; */
+	/* font-family: dotum, "Times New Roman" !important; */
+	
+	
+	font-weight: bold !important;
+	overflow-y: hidden;
+	cursor: none !important;
+}
+ 
+* {
+	/* font-family: gulim, monospace !important; */
+	font-family: Consolas, monaco, monospace !important;
+	/* font-family: "Times New Roman", Times, serif !important; */
+	/* font-family: Verdana, sans-serif !important; */
+	/* font-family: Verdana, serif !important; */
+	/* font-family: dotum, serif !important; */
+	/* font-family: gulim, serif !important; */
+	/* font-family: Georgia, sans-serif !important; */
+	
+	font-weight: bold !important;
+	color: black;
+	cursor: none !important;
+}
+
+p {
+	font-weight: bold !important;
+}
+
+img {
+	border-radius: 10px !important;
+}
+
+input {
+	/* font-family: Consolas,monaco,monospace !important; */
+	
+	/* font-family: gulim, monospace !important; */
+	
+	font-weight: bold !important;
+	/* (텍스트 선택 불가) */
+	-ms-user-select:none;
+
+	/* (텍스트 선택 불가) */
+	-moz-user-select:none;
+
+	/* (텍스트 선택 불가) */
+	-webkit-user-select:none; 
+
+	/* (텍스트 선택 불가) */
+	-user-select:none; 
+}
+
+label {
+	/* font-family: Consolas,monaco,monospace !important; */
+	font-weight: bold !important;
+}
+
+h1 {
+	color : black !important;
+	font-weight: bold !important;
+}
+
+a {
+	color: #00B7FF;
+	/* font-family: Consolas,monaco,monospace !important; */
+	font-weight: bold !important;
+}
+
+.main_image {
+	/* margin: 0 0 0 0 !important; */
+	/* height: 480px; */
+	/* padding: 0; */
+}
+ 
+.slider_div {
+	height: 60px;
+	border: 1px solid #D0D0D0;
+	border-radius: 10px;
+	text-align: center !important;
+}
+
+.ui-slider-handle {
+    height: 40px !important;
+    top: 30% !important;
+}
+
+input.ui-slider-input {
+	display: none;
+	width: 0;
+}
+
+.ui-slider-track {
+	height: 30px;
+	margin: 0 20px 0 20px !important;
+}
+
+input.ui-slider-input {
+	display: none;
+}
+
+/* mode, date a tag */
+.top_menu_st {
+	font-size: 30px;
+	/* padding: 0px; */
+}
+
+.val_btns {
+	text-align: center;
+	height: 172px;
+	width: 135px;
+	/* margin-right: 10px;  */
+}
+
+.main_adv {
+	font-size: 30px !important;
+}
+
+.main_values {
+	/* margin-top: -15px; */
+}
+
+input.main_addr_val {
+	text-align: center;
+	font-size: 30px;
+	height: 400px;
+	/* (텍스트 선택 불가) */
+	-ms-user-select:none;
+
+	/* (텍스트 선택 불가) */
+	-moz-user-select:none;
+
+	/* (텍스트 선택 불가) */
+	-webkit-user-select:none; 
+
+	/* (텍스트 선택 불가) */
+	-user-select:none; 
+
+}
+
+/* top menu : Mode, Date */
+#page_main {
+	
+}
+
+.main_top_div {
+	margin-top: -25px;
+	margin-left: -10px;
+	margin-right: -9px;
+	/* margin-bottom: -30px;	 */
+}
+
+.top_menus {
+	/* margin-top: -30px; */
+	margin-left: 0px;
+	margin-right: -14px;
+	/* margin-bottom: -20px;	 */
+}
+
+.center_menus {
+	margin-top: -25px;
+	margin-left: 0px;
+	margin-right: -14px;
+}
+
+.bottom_menus_st {
+	/* 
+	border-style:outset;
+	border-width:2px;
+	 */
+	font-size: 30px;
+	background-color: #E6E6E6 !important;
+	/* margin-bottom: 5px; */
+}
+
+.bottom_menus_div {
+	margin-top: -22px;
+	margin-left: 0px;
+	margin-right: -1px;
+} 
+
+.main_val_div {
+	margin-top: -17px;
+}
+
+/* (링크를 터치했을때 나오는 기본 영역의 색상을 제어 */
+-webkit-tap-highlight-color:rgba(0,0,0,0)
+
+/* (복사막기) */
+-webkit-touch-select: none;
+
+
+.custom {
+	border : none !important;
+}
+
+
+/* START MENU CSS */
+/* ============================================================ */
+.top_navbar {
+	font-size: 35px !important;
+}
+
+.menu_navbar {
+	font-size: 32px !important;
+	/* background-color: #D0D0D0 !important; */
+}
+
+.icon_img {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	vertical-align: center;
+}
+
+.control_menu .ui-btn {
+	font-size: 20px !important;
+}
+
+.menu_icon_img {
+	padding: 0 0 0 0 !important;
+	margin: 0 0 0 0 !important;
+	border-radius: 0px !important;
+	width: 20px;
+	height: 20px;
+	vertical-align: middle !important;
+}
+
+/* END MENU CSS */
+/* ============================================================ */
+
+/* START Feeding CSS */
+/* ============================================================ */
+
+.feeding_top_div {
+	margin-top: -10px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.feeding_btns {
+	text-align: center !important;
+	font-size : 32px !important;
+}
+
+.feeding_label {
+	color: black;
+	text-align: center !important;
+	font-size : 32px !important;
+	/* padding: 5px; */
+	/* border: 1px solid #D0D0D0; */
+	/* border-radius: 5px; */
+	margin: 10 0 0 10;
+}
+
+.feed_val_btns {
+	width: 49px !important;
+	height: 40px !important;
+}
+
+.content_st {
+	font-size : 32px !important;
+	text-align: center !important;
+	padding: 10px;
+}
+ 
+h1.h1_st {
+	font-size : 32px !important;
+	border: 1px solid #D0D0D0;
+	border-radius: 3px;
+	text-align: center !important;
+	padding: 10px;
+	margin: 0 0 0 0;
+}
+
+.feed_endisable {
+	text-align: center !important;
+	font-size: 32px;
+	/* margin: 1 0 0 0; */
+}
+
+.feed_addr_val {
+	text-align: center !important;
+	font-size: 32px;
+	height: 135px;
+	/* margin: 1 0 0 0; */
+	padding: 10px;
+}
+
+.feed_adv_top {
+	/* margin-top: -8px; */
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.feed_adv_div {
+	margin-top: -10px; 
+}
+
+.feed_adv_val {
+	/* margin: 1 0 0 0; */
+	text-align: center !important;
+	font-size : 30px !important;
+}
+
+.feed_adv_val_detail {
+	/* margin: 1 0 0 0; */
+	text-align: center !important;
+	font-size : 30px !important;
+	font-weight: bold;
+	height: 85px;
+}
+
+.feed_adv_val_btns {
+	/* margin: 5 0 0 0; */
+	width: 13px;
+	height: 15px;
+	border-radius: 10px !important;
+}
+
+
+/* END Feeding CSS */
+/* ============================================================ */
+
+
+/* START Sensitivity CSS */
+/* ============================================================ */
+
+.sens_normal_top_div {
+	margin-top: -20px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.sens_label {
+	color: black;
+	text-align: center !important;
+	font-size : 24px !important;
+	/* padding: 5px; */
+	/* border: 1px solid #D0D0D0; */
+	/* border-radius: 5px; */
+	margin: 10 0 0 10;
+}
+
+.sens_normal_div {
+	/* margin: 1 -10 0 -10; */
+	margin-top: -12px;
+	/* margin-bottom: 10px; */
+}
+
+.sens_normal_btns {
+	font-size : 24px !important;
+	/* padding: 5px; */
+	text-align: center !important;
+}
+
+.sens_normal_val {
+	text-align: center !important;
+	font-size : 24px !important;
+	padding: 5px;
+	/* height: 135px; */
+}
+
+.sens_normal_detail_val {
+	text-align: center !important;
+	font-size : 24px !important;
+	padding: 5px;
+	height: 80px;
+}
+
+.sens_normal_fr_val {
+	text-align: center !important;
+	font-size : 24px !important;
+	padding: 5px;
+	height: 80px;
+}
+
+.sens_normal_val_btns  {
+	margin: 1 0 0 0;
+	width: 16px;
+	height: 13px;
+}
+
+/* Feeding Advanced */
+/* 
+.feed_adv_content_st{
+	font-size : 15px !important;
+}
+*/
+
+.sens_adv_label {
+	text-align: center !important;
+	color: black;
+	font-size : 24px !important;
+	background-color: #D0D0D0;
+}
+.sens_adv_label_b {
+	text-align: center !important;
+	color: black;
+	font-size : 24px !important;
+	/* background-color: #D0D0D0; */
+	/* border-style: 1px solid black; */
+	border-radius: 5px;
+}
+
+.sens_adv_top_menus_a {
+	margin-top: -15px;
+	margin-left: -10px;
+	margin-right: -10px;		
+}
+.sens_adv_top_menus_b {
+	margin-top: 3px;
+	margin-left: -10px;
+	margin-right: -10px;		
+}
+
+.sens_adv_top_div {
+	margin-top: -20px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.sens_adv_val_div {
+	margin-top: -10px;	
+}
+
+.sens_adv_btns {
+	font-size : 24px !important;
+	/* padding: 5px; */
+	text-align: center !important;
+}
+
+.sens_adv_val {
+	/* margin: 1 0 0 0; */
+	text-align: center !important;
+	font-size : 18px !important;
+	font-weight: bold;
+	height: 90px;
+}
+
+.sens_adv_val_btns {
+	/* margin: 1 0 0 0; */
+	width: 45px;
+	height: 17px;
+}
+
+.sens_adv_on_off {
+	font-size : 18px !important;	
+	text-align: center !important;
+}
+
+.sens_adv_set {
+	font-size : 18px !important;	
+	text-align: center !important;
+}
+/* END Sensitivity CSS */
+/* ============================================================ */
+
+/* START Mode Change CSS */
+/* ============================================================ */
+
+.md_change_div {
+	text-align: center !important;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.md_change_title {
+	font-size: 35px !important;
+}
+
+.md_copy_div {
+	text-align: center !important;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.md_copy_title {
+	font-size: 19px !important;
+}
+
+.mode_btn_div {
+	/* vertical-align: middle; */
+}
+
+#md_copy_img_btn {
+	padding: 0;
+	font-size: 40px !important;
+	position: relative; 
+	top: 50%;
+	transform: translateY(35%);
+}
+
+#md_copy_img {
+	padding: 0;
+	width: 280px;
+	height: 280px;
+}
+
+#md_change_apply {
+	font-size: 30px !important;
+	font-weight: bold !important;
+}
+/* END Mode Change CSS */
+/* ============================================================ */
+
+/* START Mode Copy CSS */
+/* ============================================================ */
+
+/* END Mode Copy CSS */
+/* ============================================================ */
+
+/* START Video CSS */
+/* ============================================================ */
+
+.video_top_div {
+	text-align: center !important;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.video_signal_canvas_div{
+	width: 1024px;
+	height: 450px;
+	/* 
+	overflow-x: scroll;
+	overflow-y: scroll;
+	*/
+	margin: auto;
+}
+
+#video_signal{
+	background-color: black;
+	width:1024px;
+	height:450px;
+}
+
+.video_div {
+	text-align: center !important;
+	margin-top: 5px;
+	margin-bottom: -5px;
+}
+
+.video_val {
+	font-size: 32px;
+	text-align:center !important;
+}
+
+.vd_image_menu_icon {
+	width: 15px;
+	height: 50px;
+	border: none !important;
+}
+
+.vd_val_btns {
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;
+	width: 46px;
+	height: 28px;
+	padding: 0 0 0 0;
+}
+
+.vd_image_menu_btns {
+	border: 2px solid #dddddd !important;
+	border-width:2px !important;
+	border-style: outset !important;
+	font-size: 32px;
+	text-align:center !important;
+	padding: 0 0 0 0 !important;
+}
+
+.vd_con { 
+	/* width:180px;  */
+	position:relative; 
+	/* border:1px solid #ccc;  */
+}
+
+/* .con input { margin:0 0 0 4px; border:0; } */
+.vd_con img { 
+	display:block;
+	position:absolute; 
+	top:3px; 
+	left:-10px;
+	width: 70px;
+	height: 70px;
+}​
+/* END Video CSS */
+/* ============================================================ */
+
+/* START Image CSS */
+/* ============================================================ */
+
+.image_top_div {
+	text-align: center !important;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.video_canvas_div{
+	width: 1024px;
+	height: 450px;
+	/* 
+	overflow-x: scroll;
+	overflow-y: scroll;
+	*/
+	margin: auto;
+}
+
+#video_image{
+	background-color: black;
+	width:1024px;
+	height:450px;
+}
+
+.image_div {
+	text-align: center !important;
+	margin-top: 5px;
+	margin-bottom: -5px;
+}
+
+.image_val {
+	font-size: 32px;
+	text-align:center !important;
+}
+
+.image_menu_icon {
+	width: 15px;
+	height: 50px;
+	border: none !important;
+}
+
+.image_btns {
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;
+	width: 46px;
+	height: 28px;
+	padding: 0 0 0 0;
+	/* margin: 0 0 0 0; */
+}
+
+.image_menu_btns {
+	border: 2px solid #dddddd !important;
+	border-width:2px !important;
+	border-style: outset !important;
+	font-size: 32px;
+	text-align:center !important;
+}
+
+#img_zoom-val {
+
+}
+
+.con { 
+	/* width:180px;  */
+	position:relative; 
+	/* border:1px solid #ccc;  */
+}
+/* .con input { margin:0 0 0 4px; border:0; } */
+.con img { 
+	display:block;
+	position:absolute; 
+	top:22px; 
+	left:10px;
+	width: 30px;
+	height: 30px;
+}​
+
+
+/* END Image CSS */
+/* ============================================================ */
+
+/* START Lighting CSS */
+/* ============================================================ */
+
+
+.lighting_top_div {
+	margin-top: -10px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.lighting_div {
+	margin-top: -10px;
+}
+
+.lighting_label {
+	color: black;
+	background-color: #ededed;
+	text-align: center !important;
+	font-size : 30px !important;
+	margin: 10 0 0 10;
+}
+
+.lighting_label_b {
+	color: black;
+	text-align: center !important;
+	font-size : 28px !important;
+}
+
+.lighting_val {
+	text-align: center !important;
+	font-size : 28px !important;
+	padding: 5px;
+	height: 82px;
+}
+
+.lighting_btns {
+	text-align: center !important;
+	font-size : 28px !important;
+	border: 1px solid #ededed;
+	border-width:1px;
+	border-style: outset !important;
+}
+
+.lighting_val_btns {
+	/* margin: 1 0 0 0; */
+	width: 45px;
+	height: 34px;
+	border: 1px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;
+	padding: 0;
+}
+
+/* END Lighting CSS */
+/* ============================================================ */
+
+/* START Ejecting CSS */
+/* ============================================================ */
+
+.ejecting_top_div {
+	margin-top: -10px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.ejecting_label {
+	color: black;
+	background-color: #ededed;
+	text-align: center !important;
+	font-size : 30px !important;
+	margin: 10 0 0 10;
+}
+
+
+.ejecting_label_b {
+	color: black;
+	text-align: center !important;
+	font-size : 28px !important;
+}
+
+.ejecting_val {
+	text-align: center !important;
+	font-size : 28px !important;
+	padding: 5px;
+	height: 82px;
+}
+
+.ejecting_val_btns {
+	/* margin: 1 0 0 0; */
+	width: 53px;
+	height: 36px;
+	border: 1px solid #ededed;
+	border-width:1px;
+	border-style: outset !important;
+	padding: 0;
+}
+
+/* END Ejecting CSS */
+/* ============================================================ */
+
+/* START Size CSS */
+/* ============================================================ */
+
+.size_top_div {
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.size_label {
+	color: black;
+	text-align: center !important;
+	font-size : 30px !important;
+	/* padding: 5px; */
+	/* border: 1px solid #D0D0D0; */
+	/* border-radius: 5px; */
+	margin: 10 0 0 10;
+}
+
+.size_val {
+	text-align: center !important;
+	font-size : 30px !important;
+	padding: 5px;
+	height: 82px;
+}
+
+.size_val_btns  {
+	/* margin: 1 0 0 0; */
+	width: 53px;
+	height: 36px;
+	border: 1px solid #ededed;
+	border-width:1px;
+	border-style: outset !important;
+	padding: 0;
+}
+
+/* END Size CSS */
+/* ============================================================ */
+
+/* START Heater/Hopper CSS */
+/* ============================================================ */
+
+.hh-title {
+	
+	font-size: 48px !important;	
+	margin-right: 30px !important;
+	text-align: right;
+		
+}
+
+.btns_div {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	text-align: center !important;
+	vertical-align: middle !important;
+}
+
+.heater_set_btns, .pw_set_btns {
+	width: 55px !important;
+	height: 50px !important;
+	text-align: center !important;
+	margin-top: 10px;	
+	border-style:outset;
+	border: 1px solid black;
+	border-radius: 5px;
+	
+}
+
+#pw_set_temp, #heater_set_temp {
+	
+	font-size: 25px !important;
+	text-align: center;
+	vertical-align:middle !important;
+	
+}
+ 
+#pw_temp, #heater_temp {
+	font-size: 25px !important;
+	text-align: center;
+	vertical-align:middle !important;
+	padding: 0;
+}
+
+.heater_hopper_btns {
+	font-size: 25px !important;
+	text-align: center;
+	text-align: center !important;
+}
+
+/* END Heater/Hopper CSS */
+/* ============================================================ */
+
+/* START Communication CSS */
+/* ============================================================ */
+#page_com {
+	
+}
+
+.com-top-div {
+	/* 
+	position: relative;
+	top: 100px;
+	*/
+}
+
+.com-title {
+	vertical-align: middle;
+	font-size: 38px !important;
+}
+ 
+.com-check-box {
+	width: 80px !important;
+	height: 30px !important;
+	margin: 11px;
+}
+/* END Communication CSS */
+/* ============================================================ */
+
+/* START Version CSS */
+/* ============================================================ */
+
+.version_titles {
+	vertical-align: middle;
+	font-size: 36px !important;
+}
+
+.version-top-div {
+	
+}
+
+.version-gui-div {
+	
+}
+
+.version-control-div {
+	
+}
+
+/* END Version CSS */
+/* ============================================================ */
+
+/* START POWER CSS */
+/* ============================================================ */
+#page_power {
+	
+}
+
+.pw_title{
+	text-align: right;
+	vertical-align: middle !important;
+	font-size: 57px !important;
+}
+
+.power_value {
+	text-align: center !important;
+	font-size: 30px;
+	font-weight: bold;
+}
+
+.power_value_unit {
+	text-align: center !important;
+	font-size: 30px;
+	font-weight: bold;
+	border-style: inset !important;
+}
+
+#vdc-endisable-btn {
+	text-align: center !important;
+	font-size: 30px !important; 
+	font-weight: bold !important;
+}
+
+#pw_factor_val {
+	font-size: 30px !important; 
+	font-weight: bold !important;	
+}
+
+.pw_factor_btns {
+	margin-top: 10px;
+	width: 60px;
+	height: 60px;
+	text-align: center !important;
+	vertical-align: middle !important;
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;	
+}
+
+/* END POWER CSS */
+/* ============================================================ */
+
+/* START Cleaning CSS */
+/* ============================================================ */
+#page_cleaning{
+	
+}
+
+.cleaning_btns {
+	text-align: center !important;
+	font-size: 25px !important;
+	font-weight: bold;
+}
+
+.cleaning_vals {
+	text-align: center !important;
+	font-size: 33px !important;
+	font-weight: bold;
+}
+
+.cleaning-top-div {
+	position: relative;
+	top: -7px;
+	text-align: center;
+	color: black;
+}
+
+label.cleaning_title {
+	
+	padding: 0 0 0 0;
+	font-size: 50px !important;
+	
+	text-align: right;
+	margin-top: 10px !important;
+	margin-right: 20px !important;
+	
+}
+
+.Cleaning_cycle_bt, .wiper_alarm_bt { 
+	vertical-align:middle !important;
+	width: 85px;
+	height: 50px;
+}
+
+/* END Cleaning CSS */
+/* ============================================================ */
+
+/* START Air-gun CSS */
+/* ============================================================ */
+.airgun_title, .airgun_check, #channel_val {
+	text-align: center !important;
+}
+
+.airgun_title_div {
+	/* margin-right: 10px; */
+	padding: 0 0 0 0;
+}
+
+.airgun_check {
+	font-size: 20px !important;
+	font-weight: bold !important;
+}
+
+.airgun_title {
+	font-size: 20px !important;
+	font-weight: bold !important;
+}
+
+.chute_list_op {
+	text-align: center !important;
+}
+
+#chute_list {
+	text-align: center !important;
+}
+
+#channel_val {
+	font-size: 20px !important;
+	font-weight: bold !important;
+}
+
+.channel_button {
+	font-size: 30px !important;
+	width: 40x;
+	height: 40px;
+	margin-top: 10px;
+	align:middle;
+	padding: 0 0 0 0;
+	
+	border-style:outset;
+	border: 1px solid black;
+	border-radius: 5px;
+}
+/* END Air-gun CSS */
+/* ============================================================ */
+
+/* START Lamp CSS */
+/* ============================================================ */
+
+.lighting_rpt_units, .lighting_rpt_inputs, #lamp_alarm_set{
+	text-align: center !important;
+	font-weight: bold !important;
+	font-size: 25px !important;
+}
+
+.lighting_rpt_clear, .lamp_alarm_btn{
+	text-align: center !important;
+	font-size: 25px !important;
+	font-weight: bold !important;
+}
+
+.light_rpt_label {
+	
+	text-align: right !important;
+	padding-top: 10px;
+	padding-right: 20px;
+	
+	font-size: 40px !important;
+	font-weight: bold !important;
+}
+
+.lamp_alarm_set_btn {
+	width: 50x;
+	height: 50px;
+	
+	text-align: center !important;	
+	margin-top: 10px;
+	
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;	
+}
+
+#lamp_alarm_set {
+	text-align: center !important;
+	vertical-align:middle !important;
+}
+
+/* END Lamp CSS */
+/* ============================================================ */
+
+/* START Alarm CSS */
+/* ============================================================ */
+
+/* END Alarm CSS */
+/* ============================================================ */
+
+/* START User CSS */
+/* ============================================================ */
+
+/* END User CSS */
+/* ============================================================ */
+
+/* START Model CSS */
+/* ============================================================ */
+
+.model_top_div {
+	margin-top: -10px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.model_label {
+	color: black;
+	text-align: center !important;
+	font-size : 25px !important;
+	margin: 10 0 0 10;
+}
+
+.model_btns {
+	text-align: center !important;
+	font-size : 20px !important;
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;
+}
+
+.model_adv_top_div {
+	margin-top: -10px;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.model_adv_label {
+	color: black;
+	text-align: center !important;
+	font-size : 25px !important;
+	margin: 10 0 0 10;
+}
+
+.model_adv_btns{
+	text-align: center !important;
+	font-size : 20px !important;
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;	
+}
+/* END Model CSS */
+/* ============================================================ */
+
+
+
+/* START Camera ON/OFF CSS */
+/* ============================================================ */
+
+.check-rgb-a, .check-rgb-b, .color-md-btn {
+	font-size: 23px !important;
+	font-weight: bold !important;
+}
+
+label.camera-md-title {
+	margin-top: 25px;
+	text-align: left !important;
+	font-size: 25px !important;
+	font-weight: bold !important;
+}
+
+.camera_onoff_titles {
+	font-size: 30px !important;
+	font-weight: bold !important;
+	text-align: center !important;
+}
+
+.camera_onoff {
+	font-size: 30px !important;
+	font-weight: bold !important;
+}
+
+/* END Camera ON/OFF CSS */
+/* ============================================================ */
+
+/* START Password CSS */
+/* ============================================================ */
+#page_password {
+	
+}
+
+.pasword_top_div {
+	
+}
+
+.pass_titles {
+	font-size: 35px !important;
+	text-align: right !important;
+	font-weight: bold !important;
+	padding-right: 20px;
+	
+	margin-top: 20px !important;
+}
+
+.pass_inputs {
+	font-size: 30px !important;
+	font-weight: bold !important;
+}
+
+.pass_bts, .pass_init_bts {
+	font-size: 30px !important;
+	font-weight: bold !important;
+	text-align: center !important;
+}
+
+/* END Password CSS */ 
+/* ============================================================ */
+
+/* START System Power CSS */
+/* ============================================================ */
+#system_text {
+	font-size: 70px;
+	text-align: center !important;
+	font-weight: bold !important;
+}
+
+.system_btns {
+	font-size: 30px !important;
+	text-align: center !important;
+	font-weight: bold !important;
+}
+/* END System Power CSS */ 
+/* ============================================================ */
+
+/* START Validate CSS */
+/* ============================================================ */
+.validate_titles {
+	text-align: center !important;
+	font-size: 30px !important;
+}
+
+.valid_title {
+	margin-top: 20px !important;
+	text-align: center !important;
+	font-size: 30px !important;
+}
+
+.validate_pass {
+	text-align: center !important;
+	font-size: 30px !important;
+}
+
+.validate_inputs {
+	text-align: center !important;
+	font-size: 30px !important;
+	font-weight: bold;
+}
+
+.date_toggles {
+	text-align: center !important;
+	font-size: 30px !important;
+}
+
+/* END Validate CSS */
+/* ============================================================ */
+
+
+/* START Date CSS */
+/* ============================================================ */
+.date_titles {
+	font-size: 40px;
+	font-weight: bold;
+	text-align: center !important;
+}
+
+.date_bt {
+	width: 65px !important;
+	height: 50px !important;
+	text-align: center !important;
+	margin-top: 10px;
+	/* 
+	border-style:outset;
+	border: 1px solid black;
+	border-radius: 5px;
+	*/
+}
+
+.date_val {
+	font-size: 33px;
+	font-weight: bold;
+	text-align: center !important;
+}
+/* END Date CSS */
+/* ============================================================ */
+
+
+/* START Canvas CSS */
+/* ============================================================ */
+.canvas_top_div {
+	text-align: center !important;
+	margin-left: -10px;
+	margin-right: -10px;
+}
+
+.canvas_div{
+	width: 1024px;
+	height: 450px;
+	
+	text-align: center !important;
+	margin-top: 5px;
+	margin-bottom: -5px;
+	margin: auto;
+}
+
+#canvas_image{
+	background-color: black;
+	width:1024px;
+	height:450px;
+}
+
+.canvas_val {
+	font-size: 32px;
+	text-align:center !important;
+}
+
+.canvas_image_menu_icon {
+	width: 15px;
+	height: 50px;
+	border: none !important;
+}
+
+.canvas_btns {
+	border: 2px solid #ededed;
+	border-width:2px;
+	border-style: outset !important;
+	width: 46px;
+	height: 28px;
+	padding: 0 0 0 0;
+}
+
+.canvas_menu_btns {
+	border: 2px solid #dddddd !important;
+	border-width:2px !important;
+	border-style: outset !important;
+	font-size: 32px;
+	text-align:center !important;
+}
+
+.canvas_con { 
+	position:relative; 
+}
+
+.canvas_con_img { 
+	display: block;
+	position: absolute; 
+	top: 3px; 
+	left: -10px;
+	width: 70px;
+	height: 70px;
+}​
+/* END Canvas CSS */
+/* ============================================================ */
+
+
+
+/* START Import CSS */
+/* ============================================================ */
+
+/* END Import CSS */
+/* ============================================================ */
+
+/* START Export CSS */
+/* ============================================================ */
+
+/* END Export CSS */
+/* ============================================================ */
+
+
+/* START Export CSS */
+/* ============================================================ */
+#current_version {
+	font-size: 20px;
+}
+/* END Export CSS */
+/* ============================================================ */
+
+
