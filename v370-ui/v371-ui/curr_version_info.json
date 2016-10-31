@@ -1,0 +1,28 @@
+{
+	"current_version": "371",
+	"release_date": "2016-10-27",
+	"update_path": "/home/ubuntu/testWeb/v370_ui/version_info/udoo-app/v371_ui/",
+	"local_path": "/home/ubuntu/testWeb/v370_ui/",
+	"update_copy_path": {
+	
+		"images": this.update_path+"images",
+		"javascripts" : this.update_path+"javascripts",
+		"views" : this.update_path+"views",
+		"receiveData" : this.update_path+"receiveData",
+		"app" : this.update_path
+		
+	},
+	"local_copy_path": {
+	
+		"images": this.local_path+"images",
+		"javascripts" : this.local_path+"javascripts",
+		"views" : this.local_path+"views",
+		"receiveData" : this.local_path+"receiveData",
+		"app" : this.local_path
+		
+	},
+	"update_command": {
+	
+	}
+}	
+
